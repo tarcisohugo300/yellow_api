@@ -23,47 +23,117 @@ module.exports.controller = (app, io, socket_list) => {
         checkAccessToken( req.headers, res, (uObj) => {
             helper.CheckParameterValid(res, reqObj, [ "socket_id"] , () => {
 
-                db.query('SELECT `ud`.`user_id`, "App Support" AS `name`, (CASE WHEN `ud`.`image` != "" THEN CONCAT("' + helper.ImagePath() + '", `ud`.`image` ) ELSE "" END ) AS `image`, "" AS `message`, 0 as `message_type`, NOW() AS `created_date`, 0 AS `base_count` FROM `user_detail` AS `ud` WHERE `ud`.`user_type` = ?;' +
+                // db.query('SELECT `ud`.`user_id`, "App Support" AS `name`, (CASE WHEN `ud`.`image` != "" THEN CONCAT("' + helper.ImagePath() + '", `ud`.`image` ) ELSE "" END ) AS `image`, "" AS `message`, 0 as `message_type`, NOW() AS `created_date`, 0 AS `base_count` FROM `user_detail` AS `ud` WHERE `ud`.`user_type` = ?;' +
                 
-                    'SELECT `ud`.`user_id`, `ud`.`name`, (CASE WHEN `ud`.`image` != "" THEN CONCAT("' + helper.ImagePath() + '", `ud`.`image` ) ELSE "" END ) AS `image`, IFNULL(`cm`.`message` , "" ) AS `message`, IFNULL(`cm`.`message_type` , 0 ) AS `message_type`, IFNULL(`cm`.`created_date` ,   NOW() ) AS `created_date`, IFNULL(`bc`.`base_count` , 0 ) AS `base_count` FROM `user_detail` AS `ud` ' +
+                //     'SELECT `ud`.`user_id`, `ud`.`name`, (CASE WHEN `ud`.`image` != "" THEN CONCAT("' + helper.ImagePath() + '", `ud`.`image` ) ELSE "" END ) AS `image`, IFNULL(`cm`.`message` , "" ) AS `message`, IFNULL(`cm`.`message_type` , 0 ) AS `message_type`, IFNULL(`cm`.`created_date` ,   NOW() ) AS `created_date`, IFNULL(`bc`.`base_count` , 0 ) AS `base_count` FROM `user_detail` AS `ud` ' +
                     
-                    'INNER JOIN (' +
+                //     'INNER JOIN (' +
 
-                        'SELECT `created_date`, `message_type`, `message`, (CASE WHEN  `sender_id` = ? THEN `receiver_id` ELSE `sender_id` END) AS `user_id` FROM `chat_message` ' +
-                        'WHERE `chat_id` IN ( SELECT MAX(`chat_id`) FROM `chat_message` WHERE `status` < "3" AND ( `sender_id` = ? OR ( `receiver_id` = ? AND `status` > "-1") ) GROUP BY (CASE WHEN `sender_id` = ? THEN `receiver_id` ELSE `sender_id` END)  ) ' +
+                //         'SELECT `created_date`, `message_type`, `message`, (CASE WHEN  `sender_id` = ? THEN `receiver_id` ELSE `sender_id` END) AS `user_id` FROM `chat_message` ' +
+                //         'WHERE `chat_id` IN ( SELECT MAX(`chat_id`) FROM `chat_message` WHERE `status` < "3" AND ( `sender_id` = ? OR ( `receiver_id` = ? AND `status` > "-1") ) GROUP BY (CASE WHEN `sender_id` = ? THEN `receiver_id` ELSE `sender_id` END)  ) ' +
 
-                    ') AS `cm` ON `cm`.`user_id` = `ud`.`user_id` ' +
-                    'LEFT JOIN (SELECT count(`chat_id`) AS `base_count`, `sender_id` AS `user_id` FROM `chat_message` WHERE `receiver_id` = ? AND `status` = 0 GROUP BY `sender_id` ) AS `bc` ON `cm`.`user_id` = `bc`.`user_id` ' +
-                    "WHERE `ud`.`status` = 1 ORDER BY `cm`.`created_date` DESC", [ut_admin, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id  ], (err, result) => {
+                //     ') AS `cm` ON `cm`.`user_id` = `ud`.`user_id` ' +
+                //     'LEFT JOIN (SELECT count(`chat_id`) AS `base_count`, `sender_id` AS `user_id` FROM `chat_message` WHERE `receiver_id` = ? AND `status` = 0 GROUP BY `sender_id` ) AS `bc` ON `cm`.`user_id` = `bc`.`user_id` ' +
+                //     "WHERE `ud`.`status` = 1 ORDER BY `cm`.`created_date` DESC", [ut_admin, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id  ], (err, result) => {
 
-                    if(err) {
-                        helper.ThrowHtmlError(err, res);
-                        return
-                    }
+                //     if(err) {
+                //         helper.ThrowHtmlError(err, res);
+                //         return
+                //     }
 
-                    var adminArr = [];
+                //     var adminArr = [];
 
-                    helper.Dlog(result[1]);
-                    if(result[0].length > 0) {
+                //     helper.Dlog(result[1]);
+                //     if(result[0].length > 0) {
 
-                       adminArr = result[1].filter( (uObj) => result[0][0].user_id == uObj.user_id);
+                //        adminArr = result[1].filter( (uObj) => result[0][0].user_id == uObj.user_id);
                         
-                       // chat message not found admin user
-                        if (adminArr.length == 0) {
-                            //insert admin support
+                //        // chat message not found admin user
+                //         if (adminArr.length == 0) {
+                //             //insert admin support
 
-                            result[1].unshift(result[0][0]);
-                        }
+                //             result[1].unshift(result[0][0]);
+                //         }
 
-                    }
+                //     }
 
-                    res.json({
-                        'status':"1",
-                        "payload": result[1]
-                    })
+                //     res.json({
+                //         'status':"1",
+                //         "payload": result[1]
+                //     })
 
 
-                } )
+                // } )
+
+
+                db.query(
+`
+-- 1️⃣ Buscar al admin (App Support)
+SELECT 
+  ud.user_id,
+  "App Support" AS name,
+  (CASE WHEN ud.image != "" THEN CONCAT("${helper.ImagePath()}", ud.image) ELSE "" END) AS image,
+  "" AS message,
+  0 AS message_type,
+  NOW() AS created_date,
+  0 AS base_count
+FROM user_detail AS ud
+WHERE ud.user_type = ? AND ud.status = 1;
+
+-- 2️⃣ Traer todos los usuarios activos (excepto el logeado)
+SELECT 
+  ud.user_id,
+  ud.name,
+  (CASE WHEN ud.image != "" THEN CONCAT("${helper.ImagePath()}", ud.image) ELSE "" END) AS image,
+  IFNULL(cm.message, "") AS message,
+  IFNULL(cm.message_type, 0) AS message_type,
+  IFNULL(cm.created_date, NOW()) AS created_date,
+  IFNULL(bc.base_count, 0) AS base_count
+FROM user_detail AS ud
+LEFT JOIN (
+    SELECT 
+      (CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END) AS user_id,
+      message, message_type, created_date
+    FROM chat_message
+    WHERE chat_id IN (
+      SELECT MAX(chat_id)
+      FROM chat_message
+      WHERE status < 3 AND (sender_id = ? OR receiver_id = ?)
+      GROUP BY (CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END)
+    )
+) AS cm ON cm.user_id = ud.user_id
+LEFT JOIN (
+    SELECT COUNT(chat_id) AS base_count, sender_id AS user_id
+    FROM chat_message
+    WHERE receiver_id = ? AND status = 0
+    GROUP BY sender_id
+) AS bc ON bc.user_id = ud.user_id
+WHERE ud.status = 1 AND ud.user_id != ?
+ORDER BY cm.created_date DESC;
+`,
+[ut_admin, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id, uObj.user_id],
+(err, result) => {
+    if (err) {
+        helper.ThrowHtmlError(err, res);
+        return;
+    }
+
+    let adminArr = [];
+
+    if (result[0].length > 0) {
+        adminArr = result[1].filter(u => result[0][0].user_id == u.user_id);
+        if (adminArr.length == 0) {
+            result[1].unshift(result[0][0]);
+        }
+    }
+
+    res.json({
+        status: "1",
+        payload: result[1]
+    });
+}
+);
+
 
             } )
         } )
@@ -230,6 +300,82 @@ module.exports.controller = (app, io, socket_list) => {
 
     });
 
+    
+
+
+
+    // app.post('/api/support_message', (req, res) => {
+    // helper.Dlog(req.body);
+    // var reqObj = req.body;
+
+    // checkAccessToken(req.headers, res, (uObj) => {
+    //     helper.CheckParameterValid(res, reqObj, ["receiver_id", "message", "socket_id"], () => {
+
+    //         socket_list["us_" + uObj.user_id.toString()] = {
+    //             'socket_id': reqObj.socket_id
+    //         };
+
+    //         var createdDate = helper.serverYYYYMMDDHHmmss();
+
+    //         db.query(
+    //             'INSERT INTO `chat_message` (`sender_id`,`receiver_id`,`message`, `message_type` ) VALUES (?,?,?, ?) ;' +
+    //             'SELECT `user_id`, `name`, (CASE WHEN `image` != "" THEN CONCAT("' + helper.ImagePath() + '", `image` ) ELSE "" END ) AS `image`, "" AS `message`, 0 as `message_type`, NOW() AS `created_date`, 0 AS `base_count`  FROM `user_detail` WHERE `user_id` = ? ; ',
+    //             [uObj.user_id, reqObj.receiver_id, reqObj.message, "0", uObj.user_id],
+    //             (err, result) => {
+    //                 if (err) {
+    //                     helper.ThrowHtmlError(err, res);
+    //                     return;
+    //                 }
+
+    //                 if (result[0]) {
+    //                     var dataMessage = {
+    //                         "chat_id": result[0].insertId,
+    //                         "sender_id": uObj.user_id,
+    //                         "receiver_id": parseInt(reqObj.receiver_id),
+    //                         "message": reqObj.message,
+    //                         "created_date": helper.isoDate(createdDate),
+    //                         "message_type": 0,
+    //                     };
+
+    //                     res.json({
+    //                         "status": "1",
+    //                         "payload": dataMessage,
+    //                         "message": msg_success,
+    //                     });
+
+    //                     // 👇 Añade este log para depurar
+    //                     console.log("=== SOCKET LIST ===");
+    //                     console.log(socket_list);
+    //                     console.log("===================");
+
+    //                     // socket emit
+    //                     var receiverSocket = socket_list['us_' + reqObj.receiver_id];
+    //                     if (receiverSocket && io.sockets.sockets.get(receiverSocket.socket_id)) {
+    //                         io.sockets.sockets
+    //                             .get(receiverSocket.socket_id)
+    //                             .emit("support_message", {
+    //                                 "status": "1",
+    //                                 "payload": [dataMessage],
+    //                                 "user_info": result[1].length > 0 ? result[1][0] : {}
+    //                             });
+
+    //                         helper.Dlog("receiverSocket emit done");
+    //                     } else {
+    //                         helper.Dlog("receiverSocket client not connected");
+    //                     }
+
+    //                 } else {
+    //                     res.json({
+    //                         "status": "0",
+    //                         "message": msg_fail
+    //                     });
+    //                 }
+
+    //             }
+    //         );
+    //     });
+    // });
+//});
 
 }
 

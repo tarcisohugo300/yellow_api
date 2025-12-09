@@ -9,7 +9,9 @@ const msg_server_internal_error = "Server Internal Error"
 module.exports = {
 
     ImagePath:() => {
-        return "http://10.0.2.2:3001/img/";
+         return "http://10.0.2.2:3001/img/";
+        //return "http://localhost:3001/img/";
+       // return "https://fastidiously-luckless-annie.ngrok-free.dev/img/";
     },
 
     ThrowHtmlError: (err, res) => {

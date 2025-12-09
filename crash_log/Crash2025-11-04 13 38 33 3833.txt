@@ -1,0 +1,14 @@
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)
+    --------------------
+    at Protocol._enqueue (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Protocol.handshake (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+    at Connection.connect (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\Connection.js:116:18)
+    at reconnect (C:\Users\GC\Desktop\final\yellow_api\helpers\db_helpers.js:18:16)
+    at Object.<anonymous> (C:\Users\GC\Desktop\final\yellow_api\helpers\db_helpers.js:12:1)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)

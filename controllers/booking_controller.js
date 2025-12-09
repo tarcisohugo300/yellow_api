@@ -1180,15 +1180,23 @@ function checkAccessToken(helperObj, res, callback, requireType = "") {
 
 function driverNewRequestSend(bookingDetail, callback) {
     //`bd`.`pickup_lat`, `bd`.`pickup_long`,
+   //`bd`.`pickup_lat`, `bd`.`pickup_long`,
     var latitude = parseFloat(bookingDetail.pickup_lat)
     var longitude = parseFloat(bookingDetail.pickup_long)
 
-    helper.findNearByLocation(latitude, longitude, 20, (minLat, maxLat, minLng, maxLng) => {
+    
+
+
+
+
+
+helper.findNearByLocation(latitude, longitude, 20, (minLat, maxLat, minLng, maxLng) => {
+       
+        console.log("Revisando objecto:   ",bookingDetail.request_driver_id)
         var allReadySendRequest = bookingDetail.request_driver_id
         if (allReadySendRequest == "") {
             allReadySendRequest = "''"
         }
-
 
         db.query(
             "SELECT `ud`.`user_id`, `ud`.`device_source`, `ud`.`push_token`, `ud`.`lati`, `ud`.`longi` FROM `user_detail` AS `ud` " +
@@ -1201,13 +1209,13 @@ function driverNewRequestSend(bookingDetail, callback) {
                     helper.ThrowHtmlError(err);
                     return
                 }
-
+                console.log("REVISANDO 1  : ", result)
                 if (result.length > 0) {
 
                     result.forEach((driverInfo, index) => {
                         result[index].distance = helper.distance(latitude, longitude, driverInfo.lati, driverInfo.longi);
                     });
-
+                    console.log("REVISANDO 2: ", result)
                     for (var i = 0; i < result.length; i++) {
                         for (var j = i; j < result.length; j++) {
                             if (result[i].distance > result[j].distance) {
@@ -1286,7 +1294,7 @@ function driverNewRequestSend(bookingDetail, callback) {
 
                             // user ride refund amount
 
-                            return callback(2, "driver not available")
+                            return callback(2, "driver not available 1")
                         })
                     }
 

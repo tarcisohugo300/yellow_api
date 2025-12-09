@@ -1,0 +1,11 @@
+ReferenceError: service_id is not defined
+    at C:\Users\GC\Desktop\final\yellow_api\controllers\zone_controller.js:123:129
+    at Object.CheckParameterValid (C:\Users\GC\Desktop\final\yellow_api\helpers\helpers.js:70:20)
+    at C:\Users\GC\Desktop\final\yellow_api\controllers\zone_controller.js:115:20
+    at C:\Users\GC\Desktop\final\yellow_api\controllers\zone_controller.js:508:32
+    at Query.<anonymous> (C:\Users\GC\Desktop\final\yellow_api\helpers\db_helpers.js:67:24)
+    at Query.<anonymous> (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\Connection.js:488:16)
+    at Sequence.end (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\GC\Desktop\final\yellow_api\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)

@@ -113,14 +113,15 @@ module.exports.controller = (app, io, socket_list) => {
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
             helper.CheckParameterValid(res, reqObj, ["zone_id", "zone_name", "zone_json", "city", "service_id", "tax"], () => {
-
+                console.log("este es el request body: ", reqObj)
                 db.query("UPDATE `zone_list` AS `zl`" +
                     "LEFT JOIN `price_detail` AS `pd` ON  `pd`.`zone_id` = `zl`.`zone_id` AND `pd`.`service_id` NOT IN (" + reqObj.service_id + ") AND `pd`.`status` = 1 " +
-                    "LEFT JOIN `zone_document` AS `zd` ON  `zd`.`zone_id` = `zl`.`zone_id` AND `zd`.`service_id` NOT IN (" + reqObj.service_id + ") AND `sd`.`status` = 1 " +
+                    "LEFT JOIN `zone_document` AS `zd` ON  `zd`.`zone_id` = `zl`.`zone_id` AND `zd`.`service_id` NOT IN (" + reqObj.service_id + ") AND `zd`.`status` = 1 " +
+
                     "SET `zl`.`zone_name`  = ? , `zl`.`zone_json` = ?, `zl`.`tax` = ?, `zl`.`modify_date` = NOW(), `pd`.`modify_date` = NOW(), `pd`.`status` = 2, `zd`.`modify_date` = NOW(), `zd`.`status` = 2 WHERE `zl`.`zone_id` = ?;  " +
 
                     "SELECT IFNULL( GROUP_CONCAT(DISTINCT `pd`.`service_id`),'') AS `service_id` FROM `zone_list` AS `zl` " +
-                    "INNER JOIN `price_detail` AS `pd` ON `pd`.`zone_id` = `zl`.`zone_id` AND `pd`.`service_id` IN (" + reqObj, service_id + ") AND `pd`.`status` = 0 AND `zl`.`zone_id` = ?;" +
+                    "INNER JOIN `price_detail` AS `pd` ON `pd`.`zone_id` = `zl`.`zone_id` AND `pd`.`service_id` IN (" + reqObj.service_id + ") AND `pd`.`status` = 0 AND `zl`.`zone_id` = ?;" +
 
                     "SELECT IFNULL( GROUP_CONCAT(DISTINCT `service_id`),'') AS `d_service_id` FROM `zone_document` WHERE `zone_id` = ? AND `status` = 2 ;" +
 
@@ -192,7 +193,10 @@ module.exports.controller = (app, io, socket_list) => {
                         }
 
                         if (insertPrice.length > 0) {
-                            sqlQuery += 'INSERT INTO  `price_detail` (`zone_id`, `service_id`, `base_charge`, `per_km_charge`, `per_minute_charge`, `booking_charge`, `minimum_fair`, `cancel_charge` ) VALUES ?;';
+                            sqlQuery += 'INSERT INTO  `price_detail` (`zone_id`, `service_id`, `base_charge`, `per_km_charge`, `per_min_charge`, `booking_charge`, `mini_fair`, `cancel_charge` ) VALUES ?;';
+//                            sqlQuery += 'INSERT INTO `price_detail` (`zone_id`, `service_id`, `base_charge`, `per_km_charge`, `per_min_charge`, `booking_charge`, `mini_fair`, `cancel_charge` ) VALUES ?;';
+// insertPrice.push([reqObj.zone_id, service_id, pr_base_charge, pr_per_km_charge, pr_per_min_charge, pr_booking_charge, pr_mini_fair, pr_cancel_charge]);
+ 
                             sqlData.push(insertPrice);
                             dbChange = true;
                         }
