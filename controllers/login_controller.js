@@ -1048,6 +1048,18 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_admin)
     })
 
+
+    app.get('/api/test/status', (req, res) => {
+    // 1. Log en el servidor para confirmar que la petición llegó a este punto
+    helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
+    
+    // 2. Respuesta simple para el cliente
+    res.json({
+        "status": "1",
+        "message": "API está viva y el routing funciona."
+    });
+});
+
 }
 
 function checkAccessToken(helperObj, res, callback, requireType = "") {
