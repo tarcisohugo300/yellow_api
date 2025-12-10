@@ -1,61 +1,161 @@
-// yellow_api/bin/www.js (Modificado)
+// // yellow_api/bin/www.js (Modificado)
 
-// /usr/bin/env node
+// // /usr/bin/env node
+
+// /**
+//  * Module dependencies.
+//  */
+
+// var app = require('../app'); // Importa la app Express (de app.js)
+// var debug = require('debug')('food-delivery:server');
+// var http = require('http');
+// var io_module = require('socket.io'); // Importar el módulo Socket.IO
+// var fs = require('fs'); // Necesario para cargar controladores
+// var user_socket_connect_list = []; // Lista de conexiones Socket.IO
+// // INCLUIR EXPRESS PARA USAR EL ROUTER
+// var express = require('express');
+// var apiRouter = express.Router();
+// /**
+//  * Get port from environment and store in Express.
+//  */
+
+// // Render SIEMPRE usa process.env.PORT (que será 10000)
+// var port = normalizePort(process.env.PORT || '3000');
+// app.set('port', port);
+
+// /**
+//  * Create HTTP server and initialize Socket.IO
+//  */
+
+// var server = http.createServer(app);
+
+// // Inicializar Socket.IO usando el servidor HTTP.
+// // La configuración de CORS para WebSockets DEBE ir aquí.
+// var io = io_module(server, { 
+//     cors: {
+//         // La lógica debe ser dinámica:
+//         origin: port === '3000' ? "http://localhost:4200" : [
+            
+//             'https://glistening-semolina-c9d037.netlify.app', // <--- TU URL NETLIFY
+//             'https://www.miempresa.com' // <--- TU DOMINIO PERSONALIZADO
+//         ], 
+//         methods: ["GET", "POST"]
+//     }
+// });
+
+
+// /**
+//  * Carga de Controladores y Lógica de Socket.IO
+//  * ESTA LÓGICA FUE MOVIDA DE app.js (antes pp.js)
+//  */
+// fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
+//     if (file.substr(-3) == ".js") {
+//         route = require('../controllers/' + file);
+//         // Pasamos app, io, y la lista de sockets a tu controlador
+//         route.controller(apiRouter, io, user_socket_connect_list); 
+//     }
+// })
+// module.exports.apiRouter = apiRouter;
+
+// /**
+//  * Listen on provided port, on all network interfaces.
+//  */
+
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
+
+// // -------------------------------------------------------------------
+// // El resto de las funciones se mantienen sin cambios:
+// /**
+//  * Normalize a port into a number, string, or false.
+//  */
+// function normalizePort(val) {
+//     var port = parseInt(val, 10);
+
+//     if (isNaN(port)) {
+//         // named pipe
+//         return val;
+//     }
+
+//     if (port >= 0) {
+//         // port number
+//         return port;
+//     }
+
+//     return false;
+// }
+
+// /**
+//  * Event listener for HTTP server "error" event.
+//  */
+// function onError(error) {
+//     if (error.syscall !== 'listen') {
+//         throw error;
+//     }
+
+//     var bind = typeof port === 'string'
+//         ? 'Pipe ' + port
+//         : 'Port ' + port;
+
+//     // handle specific listen errors with friendly messages
+//     switch (error.code) {
+//         case 'EACCES':
+//             console.error(bind + ' requires elevated privileges');
+//             process.exit(1);
+//             break;
+//         case 'EADDRINUSE':
+//             console.error(bind + ' is already in use');
+//             process.exit(1);
+//             break;
+//         default:
+//             throw error;
+//     }
+// }
+
+// /**
+//  * Event listener for HTTP server "listening" event.
+//  */
+// function onListening() {
+//     var addr = server.address();
+//     var bind = typeof addr === 'string'
+//         ? 'pipe ' + addr
+//         : 'port ' + addr.port;
+//     debug('Listening on ' + bind);
+//     console.log("Server Start : " + port); // Agregamos un log claro
+// }
+
+
+
+
+
+
+
+
+
+
+//#!/usr/bin/env node
 
 /**
  * Module dependencies.
  */
 
-var app = require('../app'); // Importa la app Express (de app.js)
+var app = require('../app');
 var debug = require('debug')('food-delivery:server');
 var http = require('http');
-var io_module = require('socket.io'); // Importar el módulo Socket.IO
-var fs = require('fs'); // Necesario para cargar controladores
-var user_socket_connect_list = []; // Lista de conexiones Socket.IO
-// INCLUIR EXPRESS PARA USAR EL ROUTER
-var express = require('express');
-var apiRouter = express.Router();
+
 /**
  * Get port from environment and store in Express.
  */
 
-// Render SIEMPRE usa process.env.PORT (que será 10000)
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Create HTTP server and initialize Socket.IO
+ * Create HTTP server.
  */
 
 var server = http.createServer(app);
-
-// Inicializar Socket.IO usando el servidor HTTP.
-// La configuración de CORS para WebSockets DEBE ir aquí.
-var io = io_module(server, { 
-    cors: {
-        // La lógica debe ser dinámica:
-        origin: port === '3000' ? "http://localhost:4200" : [
-            
-            'https://glistening-semolina-c9d037.netlify.app', // <--- TU URL NETLIFY
-            'https://www.miempresa.com' // <--- TU DOMINIO PERSONALIZADO
-        ], 
-        methods: ["GET", "POST"]
-    }
-});
-
-
-/**
- * Carga de Controladores y Lógica de Socket.IO
- * ESTA LÓGICA FUE MOVIDA DE app.js (antes pp.js)
- */
-fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
-    if (file.substr(-3) == ".js") {
-        route = require('../controllers/' + file);
-        // Pasamos app, io, y la lista de sockets a tu controlador
-        route.controller(apiRouter, io, user_socket_connect_list); 
-    }
-})
-module.exports.apiRouter = apiRouter;
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -65,62 +165,62 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-// -------------------------------------------------------------------
-// El resto de las funciones se mantienen sin cambios:
 /**
  * Normalize a port into a number, string, or false.
  */
+
 function normalizePort(val) {
-    var port = parseInt(val, 10);
+  var port = parseInt(val, 10);
 
-    if (isNaN(port)) {
-        // named pipe
-        return val;
-    }
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
 
-    if (port >= 0) {
-        // port number
-        return port;
-    }
+  if (port >= 0) {
+    // port number
+    return port;
+  }
 
-    return false;
+  return false;
 }
 
 /**
  * Event listener for HTTP server "error" event.
  */
+
 function onError(error) {
-    if (error.syscall !== 'listen') {
-        throw error;
-    }
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
 
-    var bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
 
-    // handle specific listen errors with friendly messages
-    switch (error.code) {
-        case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
-            process.exit(1);
-            break;
-        case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
-            process.exit(1);
-            break;
-        default:
-            throw error;
-    }
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
 }
 
 /**
  * Event listener for HTTP server "listening" event.
  */
+
 function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    debug('Listening on ' + bind);
-    console.log("Server Start : " + port); // Agregamos un log claro
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
 }
