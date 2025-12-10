@@ -33,6 +33,7 @@ var io = io_module(server, {
     cors: {
         // La lógica debe ser dinámica:
         origin: port === '3000' ? "http://localhost:4200" : [
+            'http://localhost:4200',
             'https://glistening-semolina-c9d037.netlify.app', // <--- TU URL NETLIFY
             'https://www.miempresa.com' // <--- TU DOMINIO PERSONALIZADO
         ], 
