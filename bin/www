@@ -12,9 +12,7 @@ var http = require('http');
 var io_module = require('socket.io'); // Importar el módulo Socket.IO
 var fs = require('fs'); // Necesario para cargar controladores
 var user_socket_connect_list = []; // Lista de conexiones Socket.IO
-var express = require('express');
 
-var apiRouter = express.Router();
 /**
  * Get port from environment and store in Express.
  */
@@ -35,7 +33,7 @@ var io = io_module(server, {
     cors: {
         // La lógica debe ser dinámica:
         origin: port === '3000' ? "http://localhost:4200" : [
-            'http://localhost:4200',
+            
             'https://glistening-semolina-c9d037.netlify.app', // <--- TU URL NETLIFY
             'https://www.miempresa.com' // <--- TU DOMINIO PERSONALIZADO
         ], 

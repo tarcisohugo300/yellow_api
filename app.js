@@ -48,7 +48,7 @@ const corsOptions = {
             callback(null, true);
         } else {
             // Reemplazamos el throw por una respuesta de error más limpia
-            callback(new Error('Not allowed by CORS policy '));
+            callback(new Error('Not allowed by CORS policy'));
         }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
