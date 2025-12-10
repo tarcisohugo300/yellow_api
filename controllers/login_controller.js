@@ -1058,6 +1058,21 @@ module.exports.controller = (app, _io, _socket_list) => {
         "status": "1",
         "message": "API está viva y el routing funciona."
     });
+    
+    
+});
+
+ app.get('/test/ejemplo', (req, res) => {
+    // 1. Log en el servidor para confirmar que la petición llegó a este punto
+    helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
+    
+    // 2. Respuesta simple para el cliente
+    res.json({
+        "status": "1",
+        "message": "API está viva y el routing funciona."
+    });
+    
+    
 });
 
 }
