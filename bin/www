@@ -12,7 +12,9 @@ var http = require('http');
 var io_module = require('socket.io'); // Importar el módulo Socket.IO
 var fs = require('fs'); // Necesario para cargar controladores
 var user_socket_connect_list = []; // Lista de conexiones Socket.IO
-
+// INCLUIR EXPRESS PARA USAR EL ROUTER
+var express = require('express');
+var apiRouter = express.Router();
 /**
  * Get port from environment and store in Express.
  */
@@ -50,10 +52,10 @@ fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
     if (file.substr(-3) == ".js") {
         route = require('../controllers/' + file);
         // Pasamos app, io, y la lista de sockets a tu controlador
-        route.controller(app, io, user_socket_connect_list); 
+        route.controller(apiRouter, io, user_socket_connect_list); 
     }
 })
-
+module.exports.apiRouter = apiRouter;
 
 /**
  * Listen on provided port, on all network interfaces.
