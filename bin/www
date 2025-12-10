@@ -48,25 +48,15 @@ var io = io_module(server, {
  * Carga de Controladores y Lógica de Socket.IO
  * ESTA LÓGICA FUE MOVIDA DE app.js (antes pp.js)
  */
-// fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
-//     if (file.substr(-3) == ".js") {
-//         route = require('../controllers/' + file);
-//         // Pasamos app, io, y la lista de sockets a tu controlador
-//         route.controller(app, io, user_socket_connect_list); 
-//     }
-// })
 fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
     if (file.substr(-3) == ".js") {
         route = require('../controllers/' + file);
-        
-        // CAMBIO CRUCIAL: Pasamos apiRouter en lugar de app al controlador.
-        // También pasamos app si es necesario para alguna función global.
-        route.controller(apiRouter, io, user_socket_connect_list, app); // Modifica la función controller
+        // Pasamos app, io, y la lista de sockets a tu controlador
+        route.controller(app, io, user_socket_connect_list); 
     }
 })
 
-// EXPORTAR EL ROUTER PARA SER MONTADO EN app.js
-module.exports.apiRouter = apiRouter; // Exportamos el router
+
 /**
  * Listen on provided port, on all network interfaces.
  */
