@@ -11,6 +11,7 @@ const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var testRouter = require('./routes/test');
 
 var app = express();
 // ELIMINADO: var server = require('http').createServer(app);
@@ -31,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
+app.use('/api/test', testRouter);
 // Configuración de CORS HTTP (Express)
 const corsOptions = {
     // Definimos una función para que el origen sea dinámico (local o producción)
