@@ -29,8 +29,8 @@ app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', indexRouter);
-app.use('/api/users', usersRouter);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 // Configuración de CORS HTTP (Express)
 const corsOptions = {
