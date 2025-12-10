@@ -1049,7 +1049,7 @@ module.exports.controller = (app, _io, _socket_list) => {
     })
 
 
-    app.get('/api/test/status', (req, res) => {
+    app.get('/test/status', (req, res) => {
     // 1. Log en el servidor para confirmar que la petición llegó a este punto
     helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
     
