@@ -150,14 +150,14 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server, {
-  cors: {
-    origin: "http://localhost:4200",
-    methods: ["GET", "POST"]
-  }
-})
-var serverPort = 3001;
+// var server = require('http').createServer(app);
+// var io = require('socket.io')(server, {
+//   cors: {
+//     origin: "http://localhost:4200",
+//     methods: ["GET", "POST"]
+//   }
+// })
+// var serverPort = 3001;
 
 var user_socket_connect_list = [];
 
@@ -204,11 +204,11 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+// module.exports = app;
 
-server.listen(serverPort);
+// server.listen(serverPort);
 
-console.log("Server Start : " + serverPort );
+// console.log("Server Start : " + serverPort );
 
 Array.prototype.swap = (x, y) => {
   var b = this[x];
@@ -229,3 +229,4 @@ String.prototype.replaceAll = (search, replacement) => {
   var target = this;
   return target.replace(new RegExp(search, 'g'), replacement);
 }
+module.exports = { app, io, user_socket_connect_list }; // Exporta app y las variables necesarias
