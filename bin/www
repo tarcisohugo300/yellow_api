@@ -166,13 +166,12 @@ var io = require('socket.io')(server, {
     }
 });
 
-var io = require('socket.io')(server, {
-    cors: {
-        // Usa tu lista completa de CORS, incluyendo localhost:4200 y Netlify
-        origin: "*", // Temporalmente, usa '*' para asegurarte de que la conexión funcione
-        methods: ["GET", "POST"]
-    }
-});
+fs.readdirSync('./controllers').forEach((file) => {
+  if (file.substr(-3) == ".js") {
+    route = require('./controllers/' + file);
+    route.controller(app, io, user_socket_connect_list);
+  }
+})
 
 /**
  * Listen on provided port, on all network interfaces.
