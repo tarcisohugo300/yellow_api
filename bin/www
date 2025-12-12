@@ -157,6 +157,23 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+
+var io = require('socket.io')(server, {
+    cors: {
+        // Usa tu lista completa de CORS, incluyendo localhost:4200 y Netlify
+        origin: "*", // Temporalmente, usa '*' para asegurarte de que la conexión funcione
+        methods: ["GET", "POST"]
+    }
+});
+
+var io = require('socket.io')(server, {
+    cors: {
+        // Usa tu lista completa de CORS, incluyendo localhost:4200 y Netlify
+        origin: "*", // Temporalmente, usa '*' para asegurarte de que la conexión funcione
+        methods: ["GET", "POST"]
+    }
+});
+
 /**
  * Listen on provided port, on all network interfaces.
  */
