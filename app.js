@@ -233,8 +233,93 @@
 
 
 
+
+
+
+
+
+
+
+
+
+// // ===================================
+// // yellow_api/app.js - Versión Corregida
+// // ===================================
+
+// var createError = require('http-errors');
+// var express = require('express');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var logger = require('morgan');
+// const { apiRouter } = require('./bin/www');
+// const cors = require('cors');
+// // ELIMINAMOS fs para mover la carga de controladores a www.js
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+// var app = express();
+// // ELIMINAMOS: var server = require('http').createServer(app);
+// // ELIMINAMOS: var io = require('socket.io')(server, { ... })
+// // ELIMINAMOS: var serverPort = 3001; 
+// // ELIMINAMOS: var user_socket_connect_list = [];
+
+
+// // view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
+
+// app.use(logger('dev'));
+// app.use(express.json({ limit: '100mb' }));
+// app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// // Configuración de CORS HTTP (Usamos la configuración original)
+// const corsOptions = {
+//     // IMPORTANTE: Asegúrate de que tu lista completa esté aquí si usas una lista. 
+//     // Si usas un Array, reemplaza la línea de abajo por app.use(cors(corsOptions));
+//     // Por simplicidad de debug, usaremos cors() sin opciones por ahora si estaba activo.
+//     origin: "http://localhost:4200", // Ejemplo de lista restringida
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"] // Asegúrate de incluir todos los métodos
+// }
+
+// // app.use(cors(corsOptions)); // Si usas una lista restringida
+// app.use(cors()); // USAR ESTO PARA DEBUG RÁPIDO DE CORS
+// app.use('/api', apiRouter);
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+
+// // ELIMINAMOS: El bucle fs.readdirSync('./controllers').forEach((file) => { ... })
+// // Esta lógica se mueve a www.js
+
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//     next(createError(404));
+// });
+
+// // error handler
+// app.use(function (err, req, res, next) {
+//     // set locals, only providing error in development
+//     res.locals.message = err.message;
+//     res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//     // render the error page
+//     res.status(err.status || 500);
+//     res.render('error');
+// });
+
+
+// module.exports = app; 
+// // ELIMINAMOS: server.listen(serverPort);
+// // ELIMINAMOS: console.log("Server Start : " + serverPort );
+// // ELIMINAMOS: extensiones Array.prototype y String.prototype (Asegúrate de ponerlas en un helper si las usas)
+
+
+
+
 // ===================================
-// yellow_api/app.js - Versión Corregida
+// yellow_api/app.js - Corregido (Base de Express y Mounting)
 // ===================================
 
 var createError = require('http-errors');
@@ -242,19 +327,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const { apiRouter } = require('./bin/www');
+
 const cors = require('cors');
-// ELIMINAMOS fs para mover la carga de controladores a www.js
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var app = express();
-// ELIMINAMOS: var server = require('http').createServer(app);
-// ELIMINAMOS: var io = require('socket.io')(server, { ... })
-// ELIMINAMOS: var serverPort = 3001; 
-// ELIMINAMOS: var user_socket_connect_list = [];
+// Importamos el apiRouter ensamblado desde www.js. 
+// Esto debe estar después de 'var app = express();' para evitar un error de dependencia circular.
+// La importación de 'io' y 'apiRouter' se moverá al final para garantizar que www.js se cargue primero.
 
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -266,23 +349,27 @@ app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuración de CORS HTTP (Usamos la configuración original)
-const corsOptions = {
-    // IMPORTANTE: Asegúrate de que tu lista completa esté aquí si usas una lista. 
-    // Si usas un Array, reemplaza la línea de abajo por app.use(cors(corsOptions));
-    // Por simplicidad de debug, usaremos cors() sin opciones por ahora si estaba activo.
-    origin: "http://localhost:4200", // Ejemplo de lista restringida
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"] // Asegúrate de incluir todos los métodos
-}
+// Configuración de CORS HTTP (Usamos la versión simple para asegurar la conexión)
+app.use(cors()); 
 
-// app.use(cors(corsOptions)); // Si usas una lista restringida
-app.use(cors()); // USAR ESTO PARA DEBUG RÁPIDO DE CORS
-app.use('/api', apiRouter);
-app.use('/', indexRouter);
+// catch 404 and forward to error handler (Temporalmente movido antes de la carga de routers)
+// Esto asegura que la lógica de routers se cargue antes de este manejador de 404 genérico.
+
+// --- MONTAMOS LOS ROUTERS ---
+
+// Importar el apiRouter ENSAMBLADO. Lo hacemos aquí para que el require('./bin/www') funcione correctamente
+// sin romper la inicialización de Express.
+const { apiRouter } = require('./bin/www'); 
+
+// 1. Montamos el Router Dinámico bajo el prefijo /api
+app.use('/api', apiRouter); 
+
+// 2. Montamos los Routers Estáticos
+app.use('/', indexRouter); 
 app.use('/users', usersRouter);
 
-// ELIMINAMOS: El bucle fs.readdirSync('./controllers').forEach((file) => { ... })
-// Esta lógica se mueve a www.js
+// --- FIN DEL MONTAJE ---
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -300,8 +387,10 @@ app.use(function (err, req, res, next) {
     res.render('error');
 });
 
+module.exports = app;
 
-module.exports = app; 
-// ELIMINAMOS: server.listen(serverPort);
-// ELIMINAMOS: console.log("Server Start : " + serverPort );
-// ELIMINAMOS: extensiones Array.prototype y String.prototype (Asegúrate de ponerlas en un helper si las usas)
+// Aquí irían las extensiones Array/String si las necesitas (fuera de module.exports)
+/*
+Array.prototype.swap = (x, y) => { ... }
+...
+*/

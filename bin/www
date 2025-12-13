@@ -264,16 +264,147 @@
 
 
 
+// // ===================================
+// // yellow_api/bin/www.js - Versión Corregida
+// // ===================================
+
+// var app = require('../app');
+// var debug = require('debug')('food-delivery:server');
+// var http = require('http');
+// var fs = require('fs'); // Necesario para cargar controladores
+// var io_module = require('socket.io'); // Necesario para Socket.IO
+// var express = require('express');
+// /**
+//  * Get port from environment and store in Express.
+//  */
+// var port = normalizePort(process.env.PORT || '3000');
+// app.set('port', port);
+
+// /**
+//  * Create HTTP server.
+//  */
+// var server = http.createServer(app);
+
+// // ** 1. INICIALIZACIÓN DE SOCKET.IO Y LISTA DE CONEXIONES **
+// var user_socket_connect_list = [];
+
+// var io = io_module(server, { 
+//     cors: {
+//         // Usar "*" o tu lista completa. Dejamos "*" temporalmente para eliminar el 404 de CORS.
+//         origin: "*", 
+//         methods: ["GET", "POST"]
+//     }
+// });
+
+// // ** CREAR ROUTER DEDICADO PARA TODAS LAS RUTAS DE API **
+// var apiRouter = express.Router();
+
+// // ** 2. CARGA DE CONTROLADORES DINÁMICOS (MOVIDA DESDE app.js) **
+// // Carga las rutas y les pasa la instancia correcta de 'app', 'io', y 'user_socket_connect_list'.
+// fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
+//     if (file.substr(-3) == ".js") {
+//         route = require('../controllers/' + file);
+//         // La función controller de tus archivos usará ahora la instancia correcta de io.
+//         route.controller(apiRouter, io, user_socket_connect_list); 
+//     }
+// });
+
+
+// /**
+//  * Listen on provided port, on all network interfaces.
+//  */
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
+
+// /**
+//  * Normalize a port into a number, string, or false.
+//  */
+// function normalizePort(val) {
+//     var port = parseInt(val, 10);
+
+//     if (isNaN(port)) {
+//         // named pipe
+//         return val;
+//     }
+
+//     if (port >= 0) {
+//         // port number
+//         return port;
+//     }
+
+//     return false;
+// }
+
+// /**
+//  * Event listener for HTTP server "error" event.
+//  */
+// function onError(error) {
+//     if (error.syscall !== 'listen') {
+//         throw error;
+//     }
+
+//     var bind = typeof port === 'string'
+//         ? 'Pipe ' + port
+//         : 'Port ' + port;
+
+//     // handle specific listen errors with friendly messages
+//     switch (error.code) {
+//         case 'EACCES':
+//             console.error(bind + ' requires elevated privileges');
+//             process.exit(1);
+//             break;
+//         case 'EADDRINUSE':
+//             console.error(bind + ' is already in use');
+//             process.exit(1);
+//             break;
+//         default:
+//             throw error;
+//     }
+// }
+
+// /**
+//  * Event listener for HTTP server "listening" event.
+//  */
+// function onListening() {
+//     var addr = server.address();
+//     var bind = typeof addr === 'string'
+//         ? 'pipe ' + addr
+//         : 'port ' + addr.port;
+//     debug('Listening on ' + bind);
+//     console.log(`Server Start : ${addr.port}`); // Muestra el puerto real de Render
+// }
+
+// module.exports.apiRouter = apiRouter;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ===================================
-// yellow_api/bin/www.js - Versión Corregida
+// yellow_api/bin/www.js - Corregido (Unificación y Routing Dinámico)
 // ===================================
 
 var app = require('../app');
 var debug = require('debug')('food-delivery:server');
 var http = require('http');
-var fs = require('fs'); // Necesario para cargar controladores
-var io_module = require('socket.io'); // Necesario para Socket.IO
-var express = require('express');
+
+// Necesarios para Socket.IO y carga de rutas
+var fs = require('fs');
+var io_module = require('socket.io');
+var express = require('express'); // Necesario para crear apiRouter
+
 /**
  * Get port from environment and store in Express.
  */
@@ -290,25 +421,28 @@ var user_socket_connect_list = [];
 
 var io = io_module(server, { 
     cors: {
-        // Usar "*" o tu lista completa. Dejamos "*" temporalmente para eliminar el 404 de CORS.
+        // Usamos '*' para asegurar que la conexión de Socket.IO funcione.
         origin: "*", 
         methods: ["GET", "POST"]
     }
 });
 
-// ** CREAR ROUTER DEDICADO PARA TODAS LAS RUTAS DE API **
-var apiRouter = express.Router();
+// ** 2. CREAR ROUTER DEDICADO Y CARGA DE CONTROLADORES **
+var apiRouter = express.Router(); 
 
-// ** 2. CARGA DE CONTROLADORES DINÁMICOS (MOVIDA DESDE app.js) **
-// Carga las rutas y les pasa la instancia correcta de 'app', 'io', y 'user_socket_connect_list'.
+// Carga las rutas y les pasa la instancia de apiRouter, io, y la lista.
 fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
     if (file.substr(-3) == ".js") {
         route = require('../controllers/' + file);
-        // La función controller de tus archivos usará ahora la instancia correcta de io.
+        // CAMBIO CLAVE: Pasar apiRouter al controlador.
+        // El controlador DEBE usar apiRouter.post('/ruta', ...) y NO incluir '/api'.
         route.controller(apiRouter, io, user_socket_connect_list); 
     }
 });
 
+// ** 3. EXPORTAR EL ROUTER ENSAMBLADO **
+module.exports.apiRouter = apiRouter; 
+module.exports.io = io; // Exportamos io por si algún otro helper lo necesita
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -316,6 +450,8 @@ fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+// --- Funciones auxiliares (normalizePort, onError, onListening) se mantienen ---
 
 /**
  * Normalize a port into a number, string, or false.
@@ -372,7 +508,5 @@ function onListening() {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debug('Listening on ' + bind);
-    console.log(`Server Start : ${addr.port}`); // Muestra el puerto real de Render
+    console.log(`Server Start : ${addr.port}`); 
 }
-
-module.exports.apiRouter = apiRouter;
