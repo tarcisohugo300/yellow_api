@@ -318,9 +318,95 @@
 
 
 
-// ===================================
-// yellow_api/app.js - Corregido (Base de Express y Mounting)
-// ===================================
+// // ===================================
+// // yellow_api/app.js - Corregido (Base de Express y Mounting)
+// // ===================================
+
+// var createError = require('http-errors');
+// var express = require('express');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var logger = require('morgan');
+
+// const cors = require('cors');
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+// // Importamos el apiRouter ensamblado desde www.js. 
+// // Esto debe estar después de 'var app = express();' para evitar un error de dependencia circular.
+// // La importación de 'io' y 'apiRouter' se moverá al final para garantizar que www.js se cargue primero.
+
+// var app = express();
+
+// // view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
+
+// app.use(logger('dev'));
+// app.use(express.json({ limit: '100mb' }));
+// app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// // Configuración de CORS HTTP (Usamos la versión simple para asegurar la conexión)
+// app.use(cors()); 
+
+// // catch 404 and forward to error handler (Temporalmente movido antes de la carga de routers)
+// // Esto asegura que la lógica de routers se cargue antes de este manejador de 404 genérico.
+
+// // --- MONTAMOS LOS ROUTERS ---
+
+// // Importar el apiRouter ENSAMBLADO. Lo hacemos aquí para que el require('./bin/www') funcione correctamente
+// // sin romper la inicialización de Express.
+// const { apiRouter } = require('./bin/www'); 
+
+// // 1. Montamos el Router Dinámico bajo el prefijo /api
+// app.use('/api', apiRouter); 
+
+// // 2. Montamos los Routers Estáticos
+// app.use('/', indexRouter); 
+// app.use('/users', usersRouter);
+
+// // --- FIN DEL MONTAJE ---
+
+
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//     next(createError(404));
+// });
+
+// // error handler
+// app.use(function (err, req, res, next) {
+//     // set locals, only providing error in development
+//     res.locals.message = err.message;
+//     res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//     // render the error page
+//     res.status(err.status || 500);
+//     res.render('error');
+// });
+
+// module.exports = app;
+
+// // Aquí irían las extensiones Array/String si las necesitas (fuera de module.exports)
+// /*
+// Array.prototype.swap = (x, y) => { ... }
+// ...
+// */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 var createError = require('http-errors');
 var express = require('express');
@@ -329,15 +415,22 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const cors = require('cors');
+var fs = require('fs');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-// Importamos el apiRouter ensamblado desde www.js. 
-// Esto debe estar después de 'var app = express();' para evitar un error de dependencia circular.
-// La importación de 'io' y 'apiRouter' se moverá al final para garantizar que www.js se cargue primero.
-
 var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"]
+  }
+})
+var serverPort = 3001;
+
+var user_socket_connect_list = [];
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -349,48 +442,61 @@ app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuración de CORS HTTP (Usamos la versión simple para asegurar la conexión)
-app.use(cors()); 
-
-// catch 404 and forward to error handler (Temporalmente movido antes de la carga de routers)
-// Esto asegura que la lógica de routers se cargue antes de este manejador de 404 genérico.
-
-// --- MONTAMOS LOS ROUTERS ---
-
-// Importar el apiRouter ENSAMBLADO. Lo hacemos aquí para que el require('./bin/www') funcione correctamente
-// sin romper la inicialización de Express.
-const { apiRouter } = require('./bin/www'); 
-
-// 1. Montamos el Router Dinámico bajo el prefijo /api
-app.use('/api', apiRouter); 
-
-// 2. Montamos los Routers Estáticos
-app.use('/', indexRouter); 
+app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// --- FIN DEL MONTAJE ---
+const corsOptions = {
+  origin: "http://localhost:4200",
+}
 
+app.use(cors(corsOptions));
+
+// import express inside dynamic added.
+fs.readdirSync('./controllers').forEach((file) => {
+  if (file.substr(-3) == ".js") {
+    route = require('./controllers/' + file);
+    route.controller(app, io, user_socket_connect_list);
+  }
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+  next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;
 
-// Aquí irían las extensiones Array/String si las necesitas (fuera de module.exports)
-/*
-Array.prototype.swap = (x, y) => { ... }
-...
-*/
+server.listen(serverPort);
+
+console.log("Server Start : " + serverPort );
+
+Array.prototype.swap = (x, y) => {
+  var b = this[x];
+  this[x] = this[y];
+  this[y] = b;
+  return this;
+}
+
+Array.prototype.insert = (index, item) => {
+  this.splice(index, 0, item);
+}
+
+Array.prototype.replace_null = (replace = '""') => {
+  return JSON.parse(JSON.stringify(this).replace(/mull/g, replace));
+}
+
+String.prototype.replaceAll = (search, replacement) => {
+  var target = this;
+  return target.replace(new RegExp(search, 'g'), replacement);
+}
