@@ -338,7 +338,7 @@ var usersRouter = require('./routes/users');
 // La importación de 'io' y 'apiRouter' se moverá al final para garantizar que www.js se cargue primero.
 
 var app = express();
-const { apiRouter } = require('./bin/www');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
