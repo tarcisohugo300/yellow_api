@@ -69,7 +69,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     //App Api
 
-    app.post('/api/booking_request', (req, res) => {
+    app.post('/booking_request', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -245,7 +245,7 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/update_location', (req, res) => {
+    app.post('/update_location', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -290,7 +290,7 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/ride_request_accept', (req, res) => {
+    app.post('/ride_request_accept', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -403,7 +403,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     })
 
-    app.post('/api/ride_request_decline', (req, res) => {
+    app.post('/ride_request_decline', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -445,7 +445,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     })
 
-    app.post('/api/driver_cancel_ride', (req, res) => {
+    app.post('/driver_cancel_ride', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -464,7 +464,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, ut_driver)
     })
 
-    app.post('/api/user_cancel_ride', (req, res) => {
+    app.post('/user_cancel_ride', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -476,7 +476,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, ut_user)
     })
 
-    app.post('/api/user_cancel_ride_force', (req, res) => {
+    app.post('/user_cancel_ride_force', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -488,7 +488,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, ut_user)
     })
 
-    app.post('/api/booking_detail', (req, res) => {
+    app.post('/booking_detail', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -538,7 +538,7 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/driver_wait_user', (req, res) => {
+    app.post('/driver_wait_user', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -626,7 +626,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     })
 
-    app.post('/api/ride_start', (req, res) => {
+    app.post('/ride_start', (req, res) => {
 
         helper.Dlog(req.body);
         var reqObj = req.body;
@@ -719,7 +719,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     })
 
-    app.post('/api/ride_stop', (req, res) => {
+    app.post('/ride_stop', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
 
@@ -868,7 +868,7 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/home', (req, res) => {
+    app.post('/home', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -921,7 +921,7 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/driver_all_ride_list', (req, res) => {
+    app.post('/driver_all_ride_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -964,7 +964,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     })
 
-    app.post('/api/user_all_ride_list', (req, res) => {
+    app.post('/user_all_ride_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -995,7 +995,7 @@ module.exports.controller = (app, io, socket_list) => {
 
     })
 
-    app.post('/api/ride_rating', (req, res) => {
+    app.post('/ride_rating', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
 
@@ -1031,7 +1031,7 @@ module.exports.controller = (app, io, socket_list) => {
         })
     })
 
-    app.post('/api/driver_summary', (req, res) => {
+    app.post('/driver_summary', (req, res) => {
 
         helper.Dlog(req.body)
         var reqObj = req.body;

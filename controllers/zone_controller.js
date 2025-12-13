@@ -25,7 +25,7 @@ module.exports.controller = (app, io, socket_list) => {
     var pr_cancel_charge = 0;
 
     //App api
-    app.post('/api/zone_list', (req, res) => {
+    app.post('/zone_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -51,7 +51,7 @@ module.exports.controller = (app, io, socket_list) => {
     })
     
     //Admin Api
-    app.post('/api/admin/zone_add', (req, res) => {
+    app.post('/admin/zone_add', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -108,7 +108,7 @@ module.exports.controller = (app, io, socket_list) => {
             })
         }, ut_admin)
     })
-    app.post('/api/admin/zone_edit', (req, res) => {
+    app.post('/admin/zone_edit', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -230,7 +230,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, ut_admin)
 
     })
-    app.post('/api/admin/zone_detail', (req, res) => {
+    app.post('/admin/zone_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
         checkAccessToken(req.headers, res, (uObj) => {
@@ -264,7 +264,7 @@ module.exports.controller = (app, io, socket_list) => {
         }, ut_admin)
 
     })
-    app.post('/api/admin/zone_list', (req, res) => {
+    app.post('/admin/zone_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -293,7 +293,7 @@ module.exports.controller = (app, io, socket_list) => {
 
         }, "4")
     })
-    app.post('/api/admin/zone_price_list', (req, res) => {
+    app.post('/admin/zone_price_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -327,7 +327,7 @@ module.exports.controller = (app, io, socket_list) => {
                 })
         }, "4")
     })
-    app.post('/api/admin/zone_price_delete', (req, res) => {
+    app.post('/admin/zone_price_delete', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -351,7 +351,7 @@ module.exports.controller = (app, io, socket_list) => {
             })
         }, "4")
     })
-    app.post('/api/admin/zone_price_edit', (req, res) => {
+    app.post('/admin/zone_price_edit', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -382,7 +382,7 @@ module.exports.controller = (app, io, socket_list) => {
             })
         }, "4")
     })
-    app.post('/api/admin/zone_document_edit', (req, res) => {
+    app.post('/admin/zone_document_edit', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -408,7 +408,7 @@ module.exports.controller = (app, io, socket_list) => {
             })
         }, "4")
     })
-    app.post('/api/admin/zone_document_list', (req, res) => {
+    app.post('/admin/zone_document_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -445,7 +445,7 @@ module.exports.controller = (app, io, socket_list) => {
                 })
         }, "4")
     })
-    app.post('/api/admin/zone_service_list', (req, res) => {
+    app.post('/admin/zone_service_list', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
