@@ -242,7 +242,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const { apiRouter } = require('./bin/www');
 const cors = require('cors');
 // ELIMINAMOS fs para mover la carga de controladores a www.js
 
@@ -277,7 +277,7 @@ const corsOptions = {
 
 // app.use(cors(corsOptions)); // Si usas una lista restringida
 app.use(cors()); // USAR ESTO PARA DEBUG RÁPIDO DE CORS
-
+app.use('/api', apiRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

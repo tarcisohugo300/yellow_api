@@ -273,7 +273,7 @@ var debug = require('debug')('food-delivery:server');
 var http = require('http');
 var fs = require('fs'); // Necesario para cargar controladores
 var io_module = require('socket.io'); // Necesario para Socket.IO
-
+var express = require('express');
 /**
  * Get port from environment and store in Express.
  */
@@ -296,13 +296,16 @@ var io = io_module(server, {
     }
 });
 
+// ** CREAR ROUTER DEDICADO PARA TODAS LAS RUTAS DE API **
+var apiRouter = express.Router();
+
 // ** 2. CARGA DE CONTROLADORES DINÁMICOS (MOVIDA DESDE app.js) **
 // Carga las rutas y les pasa la instancia correcta de 'app', 'io', y 'user_socket_connect_list'.
 fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
     if (file.substr(-3) == ".js") {
         route = require('../controllers/' + file);
         // La función controller de tus archivos usará ahora la instancia correcta de io.
-        route.controller(app, io, user_socket_connect_list); 
+        route.controller(apiRouter, io, user_socket_connect_list); 
     }
 });
 
@@ -371,3 +374,5 @@ function onListening() {
     debug('Listening on ' + bind);
     console.log(`Server Start : ${addr.port}`); // Muestra el puerto real de Render
 }
+
+module.exports.apiRouter = apiRouter;
