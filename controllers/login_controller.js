@@ -15,7 +15,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
     const msg_fail = "fail";
     const msg_invalidUser = "invalid username";
 
-    apiRouter.post('/login', (req, res) => {
+    apiRouter.post('/api/login', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -66,7 +66,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         })
     })
 
-    apiRouter.post('/static_data', (req, res) => {
+    apiRouter.post('/api/static_data', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         helper.CheckParameterValid(res, reqObj, ["last_call_time"], () => {
@@ -124,7 +124,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         })
     }
 
-    apiRouter.post('/driver_online', (req, res) => {
+    apiRouter.post('/api/driver_online', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body
         checkAccessToken(req.headers, res, (uObj) => {
@@ -236,7 +236,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         })
     })
 
-    apiRouter.post('/admin/login', (req, res) => {
+    apiRouter.post('/api/admin/login', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -270,7 +270,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
     })
 
-    apiRouter.post('/profile_update', (req, res) => {
+    apiRouter.post('/api/profile_update', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -325,7 +325,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         })
     })
 
-    apiRouter.post('/profile_image', (req, res) => {
+    apiRouter.post('/api/profile_image', (req, res) => {
         helper.Dlog(req.body);
         console.log(req.headers)
         var form = new multiparty.Form();
@@ -377,7 +377,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
     })
 
 
-    apiRouter.post('/service_and_zone_list', (req, res) => {
+    apiRouter.post('/api/service_and_zone_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
         console.log(req.headers)
@@ -408,7 +408,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
     })
 
 
-    apiRouter.post('/address_add', (req, res) => {
+    apiRouter.post('/api/address_add', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -448,7 +448,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, "1")
     })
 
-    apiRouter.post('/address_edit', (req, res) => {
+    apiRouter.post('/api/address_edit', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -476,7 +476,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, "1")
     })
 
-    apiRouter.post('/address_delete', (req, res) => {
+    apiRouter.post('/api/address_delete', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -503,7 +503,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, "1")
     })
 
-    apiRouter.post('/address_list', (req, res) => {
+    apiRouter.post('/api/address_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -523,7 +523,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
     })
 
-    apiRouter.post('/driver_service_provide', (req, res) => {
+    apiRouter.post('/api/driver_service_provide', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -551,7 +551,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_driver)
     })
 
-    apiRouter.post('/bank_detail', (req, res) => {
+    apiRouter.post('/api/bank_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -576,7 +576,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
     })
 
-    apiRouter.post('/driver_bank_update', (req, res) => {
+    apiRouter.post('/api/driver_bank_update', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -632,7 +632,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_driver)
     })
 
-    apiRouter.post('/service_detail', (req, res) => {
+    apiRouter.post('/api/service_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -684,7 +684,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
     })
 
-    apiRouter.post('/change_password', (req, res) => {
+    apiRouter.post('/api/change_password', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken( req.headers,  res, (uObj) => {
@@ -714,7 +714,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         } )
     } )
 
-    apiRouter.post('/contact_us', (req, res) => {
+    apiRouter.post('/api/contact_us', (req, res) => {
         helper.Dlog(req.body)
         var reqObj =  req.body
         helper.CheckParameterValid(res, reqObj, ["name", "email", "subject", "message"], () => {
@@ -744,7 +744,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
     } )
 
-    apiRouter.post('/admin/user_list', (req, res) => {
+    apiRouter.post('/api/admin/user_list', (req, res) => {
         helper.Dlog(req.body)
         checkAccessToken(req.headers, res, (_uObj) => {
             db.query("SELECT `ud`.`user_id`, `ud`.`name`, `ud`.`email`, `ud`.`gender`, `ud`.`mobile`, `ud`.`mobile_code`, `ud`.`user_type`, `ud`.`device_source`, `ud`.`zone_id`, `ud`.`is_block`, (CASE WHEN `ud`.`image` != '' THEN CONCAT('" + helper.ImagePath() + "', `ud`.`image`  ) ELSE '' END) AS `image` , `ud`.`is_online`, `ud`.`status`, `ud`.`created_date`, IFNULL( `zl`.`zone_name`, '' ) AS `zone_name` FROM `user_detail` AS `ud`" +
@@ -764,7 +764,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    apiRouter.post('/admin/driver_list', (req, res) => {
+    apiRouter.post('/api/admin/driver_list', (req, res) => {
         helper.Dlog(req.body)
         checkAccessToken(req.headers, res, (_uObj) => {
             db.query("SELECT `ud`.`user_id`, `ud`.`name`, `ud`.`email`, `ud`.`gender`, `ud`.`mobile`, `ud`.`mobile_code`, `ud`.`user_type`, `ud`.`device_source`, `ud`.`zone_id`, `ud`.`is_block`, (CASE WHEN `ud`.`image` != '' THEN CONCAT('" + helper.ImagePath() + "', `ud`.`image`  ) ELSE '' END) AS `image` , `ud`.`is_online`, `ud`.`status`, `ud`.`created_date`, IFNULL( `zl`.`zone_name` , '' ) AS `zone_name` FROM `user_detail` AS `ud`" +
@@ -784,7 +784,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    apiRouter.post('/admin/driver_detail', (req, res) => {
+    apiRouter.post('/api/admin/driver_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -816,7 +816,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    apiRouter.post('/admin/service_add', (req, res) => {
+    apiRouter.post('/api/admin/service_add', (req, res) => {
         var form = new multiparty.Form();
         form.parse(req, (err, reqObj, files) => {
             if (err) {
@@ -890,7 +890,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         })
     })
 
-    apiRouter.post('/admin/service_list', (req, res) => {
+    apiRouter.post('/api/admin/service_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -909,7 +909,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    apiRouter.post('/admin/service_document_list', (req, res) => {
+    apiRouter.post('/api/admin/service_document_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -932,7 +932,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    apiRouter.post('/admin/service_edit', (req, res) => {
+    apiRouter.post('/api/admin/service_edit', (req, res) => {
         var form = new multiparty.Form();
         form.parse(req, (err, reqObj, files) => {
             if (err) {
@@ -1019,7 +1019,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
         })
     })
 
-    apiRouter.post('/admin/service_delete', (req, res) => {
+    apiRouter.post('/api/admin/service_delete', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -1051,7 +1051,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
     apiRouter.get('/test/status', (req, res) => {
     // 1. Log en el servidor para confirmar que la petición llegó a este punto
-    helper.Dlog('INFO: Petición de prueba recibida en /test/status'); 
+    helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
     
     // 2. Respuesta simple para el cliente
     res.json({
@@ -1064,7 +1064,7 @@ module.exports.controller = (apiRouter, _io, _socket_list) => {
 
  apiRouter.get('/test/ejemplo', (req, res) => {
     // 1. Log en el servidor para confirmar que la petición llegó a este punto
-    helper.Dlog('INFO: Petición de prueba recibida en /test/status'); 
+    helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
     
     // 2. Respuesta simple para el cliente
     res.json({
