@@ -140,43 +140,176 @@
  * Module dependencies.
  */
 
+// var app = require('../app');
+// var debug = require('debug')('food-delivery:server');
+// var http = require('http');
+
+// /**
+//  * Get port from environment and store in Express.
+//  */
+
+// var port = normalizePort(process.env.PORT || '3000');
+// app.set('port', port);
+
+// /**
+//  * Create HTTP server.
+//  */
+
+// var server = http.createServer(app);
+
+
+// var io = require('socket.io')(server, {
+//     cors: {
+//         // Usa tu lista completa de CORS, incluyendo localhost:4200 y Netlify
+//         origin: "*", // Temporalmente, usa '*' para asegurarte de que la conexión funcione
+//         methods: ["GET", "POST"]
+//     }
+// });
+
+// fs.readdirSync('./controllers').forEach((file) => {
+//   if (file.substr(-3) == ".js") {
+//     route = require('./controllers/' + file);
+//     route.controller(app, io, user_socket_connect_list);
+//   }
+// })
+
+// /**
+//  * Listen on provided port, on all network interfaces.
+//  */
+
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
+
+// /**
+//  * Normalize a port into a number, string, or false.
+//  */
+
+// function normalizePort(val) {
+//   var port = parseInt(val, 10);
+
+//   if (isNaN(port)) {
+//     // named pipe
+//     return val;
+//   }
+
+//   if (port >= 0) {
+//     // port number
+//     return port;
+//   }
+
+//   return false;
+// }
+
+// /**
+//  * Event listener for HTTP server "error" event.
+//  */
+
+// function onError(error) {
+//   if (error.syscall !== 'listen') {
+//     throw error;
+//   }
+
+//   var bind = typeof port === 'string'
+//     ? 'Pipe ' + port
+//     : 'Port ' + port;
+
+//   // handle specific listen errors with friendly messages
+//   switch (error.code) {
+//     case 'EACCES':
+//       console.error(bind + ' requires elevated privileges');
+//       process.exit(1);
+//       break;
+//     case 'EADDRINUSE':
+//       console.error(bind + ' is already in use');
+//       process.exit(1);
+//       break;
+//     default:
+//       throw error;
+//   }
+// }
+
+// /**
+//  * Event listener for HTTP server "listening" event.
+//  */
+
+// function onListening() {
+//   var addr = server.address();
+//   var bind = typeof addr === 'string'
+//     ? 'pipe ' + addr
+//     : 'port ' + addr.port;
+//   debug('Listening on ' + bind);
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ===================================
+// yellow_api/bin/www.js - Versión Corregida
+// ===================================
+
 var app = require('../app');
 var debug = require('debug')('food-delivery:server');
 var http = require('http');
+var fs = require('fs'); // Necesario para cargar controladores
+var io_module = require('socket.io'); // Necesario para Socket.IO
 
 /**
  * Get port from environment and store in Express.
  */
-
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
-
 var server = http.createServer(app);
 
+// ** 1. INICIALIZACIÓN DE SOCKET.IO Y LISTA DE CONEXIONES **
+var user_socket_connect_list = [];
 
-var io = require('socket.io')(server, {
+var io = io_module(server, { 
     cors: {
-        // Usa tu lista completa de CORS, incluyendo localhost:4200 y Netlify
-        origin: "*", // Temporalmente, usa '*' para asegurarte de que la conexión funcione
+        // Usar "*" o tu lista completa. Dejamos "*" temporalmente para eliminar el 404 de CORS.
+        origin: "*", 
         methods: ["GET", "POST"]
     }
 });
 
-fs.readdirSync('./controllers').forEach((file) => {
-  if (file.substr(-3) == ".js") {
-    route = require('./controllers/' + file);
-    route.controller(app, io, user_socket_connect_list);
-  }
-})
+// ** 2. CARGA DE CONTROLADORES DINÁMICOS (MOVIDA DESDE app.js) **
+// Carga las rutas y les pasa la instancia correcta de 'app', 'io', y 'user_socket_connect_list'.
+fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
+    if (file.substr(-3) == ".js") {
+        route = require('../controllers/' + file);
+        // La función controller de tus archivos usará ahora la instancia correcta de io.
+        route.controller(app, io, user_socket_connect_list); 
+    }
+});
+
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
@@ -184,59 +317,57 @@ server.on('listening', onListening);
 /**
  * Normalize a port into a number, string, or false.
  */
-
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+    var port = parseInt(val, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-  return false;
+    return false;
 }
 
 /**
  * Event listener for HTTP server "error" event.
  */
-
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+    console.log(`Server Start : ${addr.port}`); // Muestra el puerto real de Render
 }
