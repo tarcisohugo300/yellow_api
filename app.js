@@ -502,7 +502,112 @@
 // }
 
 
-// app.js (VERSION CORREGIDA, SOLO CONFIGURACIÓN)
+
+
+
+
+
+
+// // app.js (VERSION CORREGIDA, SOLO CONFIGURACIÓN)
+// var createError = require('http-errors');
+// var express = require('express');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var logger = require('morgan');
+
+// const cors = require('cors');
+// var fs = require('fs');
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+// var app = express();
+
+// // 💡 1. IMPORTAR IO y el server de www.js
+// // Esto se hace ANTES de cargar los controllers
+// var { io, server } = require('./bin/www'); 
+
+
+// // 💡 2. DECLARAR user_socket_connect_list
+// var user_socket_connect_list = [];
+
+// // view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
+
+// app.use(logger('dev'));
+// // Usa un límite de JSON más grande si necesitas subir imágenes grandes
+// app.use(express.json({ limit: '100mb' })); 
+// app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+
+// const corsOptions = {
+//   origin: "http://localhost:4200",
+// }
+
+// app.use(cors(corsOptions));
+
+
+// // 💡 3. CREAR UN ROUTER para las rutas dinámicas (para montarlas en /api)
+// var apiRouter = express.Router();
+
+
+// // ♻️ 4. CARGA DE CONTROLADORES
+// // Se pasa el apiRouter, io, y user_socket_connect_list a cada controller
+// fs.readdirSync('./controllers').forEach((file) => {
+//   if (file.substr(-3) == ".js") {
+//     route = require('./controllers/' + file);
+//     // CAMBIO CLAVE: Pasar el apiRouter, io, y la lista de sockets
+//     route.controller(apiRouter, io, user_socket_connect_list); 
+//   }
+// })
+
+// // 💡 5. MONTAR EL ROUTER DINÁMICO
+// // Todas las rutas de tus controllers (ej: '/login') ahora serán accesibles en /api/login
+// app.use('/api', apiRouter);
+
+
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
+
+// // error handler
+// app.use(function (err, req, res, next) {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+
+
+// // MÓDULO EXPORTS
+// module.exports = app;
+
+// // ❌ ELIMINAR CÓDIGO EXTRA: 
+// // El servidor ya no se inicia aquí, y las funciones de Array/String están fuera del alcance estándar.
+// /*
+// server.listen(serverPort);
+// console.log("Server Start : " + serverPort );
+// Array.prototype.swap = (x, y) => { ... }
+// ... etc.
+// */
+
+
+
+
+
+
+
+
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -516,13 +621,15 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"]
+  }
+})
+var serverPort = 3001;
 
-// 💡 1. IMPORTAR IO y el server de www.js
-// Esto se hace ANTES de cargar los controllers
-var { io, server } = require('./bin/www'); 
-
-
-// 💡 2. DECLARAR user_socket_connect_list
 var user_socket_connect_list = [];
 
 // view engine setup
@@ -530,8 +637,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-// Usa un límite de JSON más grande si necesitas subir imágenes grandes
-app.use(express.json({ limit: '100mb' })); 
+app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -540,56 +646,57 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 const corsOptions = {
-  origin: "http://localhost:4200",
+  origin: "http://localhost:4200",
 }
 
 app.use(cors(corsOptions));
 
-
-// 💡 3. CREAR UN ROUTER para las rutas dinámicas (para montarlas en /api)
-var apiRouter = express.Router();
-
-
-// ♻️ 4. CARGA DE CONTROLADORES
-// Se pasa el apiRouter, io, y user_socket_connect_list a cada controller
+// import express inside dynamic added.
 fs.readdirSync('./controllers').forEach((file) => {
-  if (file.substr(-3) == ".js") {
-    route = require('./controllers/' + file);
-    // CAMBIO CLAVE: Pasar el apiRouter, io, y la lista de sockets
-    route.controller(apiRouter, io, user_socket_connect_list); 
-  }
+  if (file.substr(-3) == ".js") {
+    route = require('./controllers/' + file);
+    route.controller(app, io, user_socket_connect_list);
+  }
 })
-
-// 💡 5. MONTAR EL ROUTER DINÁMICO
-// Todas las rutas de tus controllers (ej: '/login') ahora serán accesibles en /api/login
-app.use('/api', apiRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
-
-// MÓDULO EXPORTS
 module.exports = app;
 
-// ❌ ELIMINAR CÓDIGO EXTRA: 
-// El servidor ya no se inicia aquí, y las funciones de Array/String están fuera del alcance estándar.
-/*
 server.listen(serverPort);
+
 console.log("Server Start : " + serverPort );
-Array.prototype.swap = (x, y) => { ... }
-... etc.
-*/
+
+Array.prototype.swap = (x, y) => {
+  var b = this[x];
+  this[x] = this[y];
+  this[y] = b;
+  return this;
+}
+
+Array.prototype.insert = (index, item) => {
+  this.splice(index, 0, item);
+}
+
+Array.prototype.replace_null = (replace = '""') => {
+  return JSON.parse(JSON.stringify(this).replace(/mull/g, replace));
+}
+
+String.prototype.replaceAll = (search, replacement) => {
+  var target = this;
+  return target.replace(new RegExp(search, 'g'), replacement);
+}
