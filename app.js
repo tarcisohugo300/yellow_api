@@ -791,10 +791,8 @@
 
 
 
-
-
 // ===================================
-// yellow_api/app.js - Corregido (Limpieza)
+// yellow_api/app.js - Versión Corregida
 // ===================================
 
 var createError = require('http-errors');
@@ -804,14 +802,14 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const cors = require('cors');
-// ELIMINAMOS 'fs' de aquí
+// ELIMINAMOS fs para mover la carga de controladores a www.js
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
 // ELIMINAMOS: var server = require('http').createServer(app);
-// ELIMINAMOS: var io = require('socket.io')(server, { ... });
+// ELIMINAMOS: var io = require('socket.io')(server, { ... })
 // ELIMINAMOS: var serverPort = 3001; 
 // ELIMINAMOS: var user_socket_connect_list = [];
 
@@ -826,8 +824,17 @@ app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuración de CORS HTTP (Usamos la versión simple para asegurar el debug)
-app.use(cors()); 
+// Configuración de CORS HTTP (Usamos la configuración original)
+const corsOptions = {
+    // IMPORTANTE: Asegúrate de que tu lista completa esté aquí si usas una lista. 
+    // Si usas un Array, reemplaza la línea de abajo por app.use(cors(corsOptions));
+    // Por simplicidad de debug, usaremos cors() sin opciones por ahora si estaba activo.
+    origin: "http://localhost:4200", // Ejemplo de lista restringida
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"] // Asegúrate de incluir todos los métodos
+}
+
+// app.use(cors(corsOptions)); // Si usas una lista restringida
+app.use(cors()); // USAR ESTO PARA DEBUG RÁPIDO DE CORS
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -851,8 +858,8 @@ app.use(function (err, req, res, next) {
     res.render('error');
 });
 
-// La aplicación Express es lo único que se exporta.
-module.exports = app; 
 
-// ELIMINAMOS: server.listen(serverPort); y console.log.
-// ELIMINAMOS: extensiones Array.prototype y String.prototype (muévelas a un helper si son necesarias).
+module.exports = app; 
+// ELIMINAMOS: server.listen(serverPort);
+// ELIMINAMOS: console.log("Server Start : " + serverPort );
+// ELIMINAMOS: extensiones Array.prototype y String.prototype (Asegúrate de ponerlas en un helper si las usas)

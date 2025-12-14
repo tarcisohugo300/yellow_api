@@ -941,19 +941,15 @@
 
 
 
-
-
 // ===================================
-// yellow_api/bin/www.js - Corregido (Unificación)
+// yellow_api/bin/www.js - Versión Corregida
 // ===================================
 
 var app = require('../app');
 var debug = require('debug')('food-delivery:server');
 var http = require('http');
-
-// Necesarios para Socket.IO y carga de rutas
-var fs = require('fs');
-var io_module = require('socket.io');
+var fs = require('fs'); // Necesario para cargar controladores
+var io_module = require('socket.io'); // Necesario para Socket.IO
 
 /**
  * Get port from environment and store in Express.
@@ -971,7 +967,7 @@ var user_socket_connect_list = [];
 
 var io = io_module(server, { 
     cors: {
-        // Usamos '*' para eliminar el error 404 de CORS como causa.
+        // Usar "*" o tu lista completa. Dejamos "*" temporalmente para eliminar el 404 de CORS.
         origin: "*", 
         methods: ["GET", "POST"]
     }
@@ -982,7 +978,7 @@ var io = io_module(server, {
 fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
     if (file.substr(-3) == ".js") {
         route = require('../controllers/' + file);
-        // Pasa las instancias CORRECTAS de app, io, y la lista.
+        // La función controller de tus archivos usará ahora la instancia correcta de io.
         route.controller(app, io, user_socket_connect_list); 
     }
 });
@@ -1050,5 +1046,5 @@ function onListening() {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debug('Listening on ' + bind);
-    console.log(`Server Start : ${addr.port}`); 
+    console.log(`Server Start : ${addr.port}`); // Muestra el puerto real de Render
 }
