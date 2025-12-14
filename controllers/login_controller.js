@@ -759,6 +759,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
                     if (result.length > 0) {
                         res.json({ "status": "1", "payload": result })
+                        console.log("aqui esta el socket en user_list:  ",_io)
                     } else {
                         res.json({ "status": "0", "payload": [], "message": "no data" })
                     }
