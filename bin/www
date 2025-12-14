@@ -670,7 +670,7 @@ var io = socketio(server, {
 // 🔑 EXPORTAR IO para poder importarlo en helpers o controllers
 module.exports.io = io;
 
-
+module.exports.server = server;
 // ... (El resto de funciones normalizePort, onError, onListening se dejan igual) ...
 
 /**

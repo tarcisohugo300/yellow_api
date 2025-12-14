@@ -521,7 +521,7 @@ var app = express(); // ⬅️ Deja solo la aplicación Express
 // ❌ ELIMINAR: var serverPort = 3001;
 // ❌ ELIMINAR: server.listen(serverPort);
 // ❌ ELIMINAR: console.log("Server Start : " + serverPort );
-
+var { io, server } = require('./bin/www');
 var user_socket_connect_list = [];
 
 // view engine setup
@@ -550,11 +550,10 @@ var apiRouter = express.Router();
 // ♻️ CARGA DE CONTROLLERS (Manda el router, no 'app')
 // Así podrás montar todas las rutas dinámicas bajo un prefijo en www.js
 fs.readdirSync('./controllers').forEach((file) => {
-  if (file.substr(-3) == ".js") {
-    route = require('./controllers/' + file);
-    // 💡 CAMBIO CRUCIAL: Manda el apiRouter en lugar de 'app'
-    route.controller(apiRouter, null, user_socket_connect_list); 
-  }
+   if (file.substr(-3) == ".js") {
+ route = require('./controllers/' + file);
+ route.controller(apiRouter, io, user_socket_connect_list); // ⬅️ Usaba 'app' y variables internas
+ }
 })
 
 // Monta el apiRouter en el prefijo /api (Asumiendo que tus rutas eran /login, /admin/login, etc.)
