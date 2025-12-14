@@ -945,7 +945,8 @@
 // yellow_api/bin/www.js - Versión Corregida
 // ===================================
 
-var app = require('../app');
+// var app = require('../app');
+var { app, apiRouter } = require('../app');
 var debug = require('debug')('food-delivery:server');
 var http = require('http');
 var fs = require('fs'); // Necesario para cargar controladores
@@ -979,7 +980,8 @@ fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
     if (file.substr(-3) == ".js") {
         route = require('../controllers/' + file);
         // La función controller de tus archivos usará ahora la instancia correcta de io.
-        route.controller(app, io, user_socket_connect_list); 
+       // route.controller(app, io, user_socket_connect_list); 
+       route.controller(apiRouter, io, user_socket_connect_list);
     }
 });
 

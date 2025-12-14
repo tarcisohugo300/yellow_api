@@ -745,7 +745,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     } )
 
-    app.post('/api/admin/user_list', (req, res) => {
+    app.post('/admin/user_list', (req, res) => {
         helper.Dlog(req.body)
         console.log("aqui esta el socket en user_list:  ",_io)
         checkAccessToken(req.headers, res, (_uObj) => {

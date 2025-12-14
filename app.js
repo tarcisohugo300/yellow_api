@@ -800,7 +800,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+var apiRouter = express.Router();
 const cors = require('cors');
 // ELIMINAMOS fs para mover la carga de controladores a www.js
 
@@ -839,6 +839,8 @@ app.use(cors()); // USAR ESTO PARA DEBUG RÁPIDO DE CORS
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.use('/api', apiRouter);
+
 // ELIMINAMOS: El bucle fs.readdirSync('./controllers').forEach((file) => { ... })
 // Esta lógica se mueve a www.js
 
@@ -858,8 +860,8 @@ app.use(function (err, req, res, next) {
     res.render('error');
 });
 
-
-module.exports = app; 
+module.exports = { app, apiRouter };
+// module.exports = app; 
 // ELIMINAMOS: server.listen(serverPort);
 // ELIMINAMOS: console.log("Server Start : " + serverPort );
 // ELIMINAMOS: extensiones Array.prototype y String.prototype (Asegúrate de ponerlas en un helper si las usas)
