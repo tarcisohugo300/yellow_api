@@ -15,6 +15,7 @@ module.exports.controller = (app, _io, _socket_list) => {
     const msg_fail = "fail";
     const msg_invalidUser = "invalid username";
 
+    console.log("aqui esta el socket en user_list:  ",_io)
     app.post('/api/login', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
@@ -746,6 +747,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     app.post('/api/admin/user_list', (req, res) => {
         helper.Dlog(req.body)
+        console.log("aqui esta el socket en user_list:  ",_io)
         checkAccessToken(req.headers, res, (_uObj) => {
             db.query("SELECT `ud`.`user_id`, `ud`.`name`, `ud`.`email`, `ud`.`gender`, `ud`.`mobile`, `ud`.`mobile_code`, `ud`.`user_type`, `ud`.`device_source`, `ud`.`zone_id`, `ud`.`is_block`, (CASE WHEN `ud`.`image` != '' THEN CONCAT('" + helper.ImagePath() + "', `ud`.`image`  ) ELSE '' END) AS `image` , `ud`.`is_online`, `ud`.`status`, `ud`.`created_date`, IFNULL( `zl`.`zone_name`, '' ) AS `zone_name` FROM `user_detail` AS `ud`" +
                 "LEFT JOIN`zone_list` AS`zl` ON`zl`.`zone_id` = `ud`.`zone_id`" +
