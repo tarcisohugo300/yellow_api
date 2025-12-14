@@ -9,14 +9,14 @@ const ut_admin = 4
 const ut_driver = 2
 const ut_user = 1
 
-module.exports.controller = (app, _io, _socket_list) => {
+module.exports.controller = (router, _io, _socket_list) => {
 
     const msg_success = "successfully";
     const msg_fail = "fail";
     const msg_invalidUser = "invalid username";
 
     console.log("aqui esta el socket en user_list:  ",_io)
-    app.post('/api/login', (req, res) => {
+    router.post('/api/login', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -67,7 +67,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         })
     })
 
-    app.post('/api/static_data', (req, res) => {
+    router.post('/api/static_data', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
         helper.CheckParameterValid(res, reqObj, ["last_call_time"], () => {
@@ -125,7 +125,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         })
     }
 
-    app.post('/api/driver_online', (req, res) => {
+    router.post('/api/driver_online', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body
         checkAccessToken(req.headers, res, (uObj) => {
@@ -163,7 +163,7 @@ module.exports.controller = (app, _io, _socket_list) => {
                                     
                                     res.json({
                                         "status": "0",
-                                        "message": "Your account not approved"
+                                        "message": "Your account not routerroved"
                                     })
                                     return
                                 }
@@ -237,7 +237,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         })
     })
 
-    app.post('/api/admin/login', (req, res) => {
+    router.post('/api/admin/login', (req, res) => {
         helper.Dlog(req.body);
         var reqObj = req.body;
 
@@ -271,7 +271,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     })
 
-    app.post('/api/profile_update', (req, res) => {
+    router.post('/api/profile_update', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -326,7 +326,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         })
     })
 
-    app.post('/api/profile_image', (req, res) => {
+    router.post('/api/profile_image', (req, res) => {
         helper.Dlog(req.body);
         console.log(req.headers)
         var form = new multiparty.Form();
@@ -378,7 +378,7 @@ module.exports.controller = (app, _io, _socket_list) => {
     })
 
 
-    app.post('/api/service_and_zone_list', (req, res) => {
+    router.post('/api/service_and_zone_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
         console.log(req.headers)
@@ -409,7 +409,7 @@ module.exports.controller = (app, _io, _socket_list) => {
     })
 
 
-    app.post('/api/address_add', (req, res) => {
+    router.post('/api/address_add', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -449,7 +449,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, "1")
     })
 
-    app.post('/api/address_edit', (req, res) => {
+    router.post('/api/address_edit', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -477,7 +477,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, "1")
     })
 
-    app.post('/api/address_delete', (req, res) => {
+    router.post('/api/address_delete', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -504,7 +504,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, "1")
     })
 
-    app.post('/api/address_list', (req, res) => {
+    router.post('/api/address_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -524,7 +524,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     })
 
-    app.post('/api/driver_service_provide', (req, res) => {
+    router.post('/api/driver_service_provide', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -552,7 +552,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_driver)
     })
 
-    app.post('/api/bank_detail', (req, res) => {
+    router.post('/api/bank_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -577,7 +577,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     })
 
-    app.post('/api/driver_bank_update', (req, res) => {
+    router.post('/api/driver_bank_update', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -633,7 +633,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_driver)
     })
 
-    app.post('/api/service_detail', (req, res) => {
+    router.post('/api/service_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body;
 
@@ -653,13 +653,13 @@ module.exports.controller = (app, _io, _socket_list) => {
                 }
 
                 if (result.length > 0) {
-                    var userStatus = "Approved";
+                    var userStatus = "routerroved";
                     switch (result[1][0].status) {
                         case 0:
                             userStatus = "No Verify"
                             break;
                         case 1:
-                            userStatus = "Not Approved"
+                            userStatus = "Not routerroved"
                             break
                         default:
                             break;
@@ -685,7 +685,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     })
 
-    app.post('/api/change_password', (req, res) => {
+    router.post('/api/change_password', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken( req.headers,  res, (uObj) => {
@@ -715,7 +715,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         } )
     } )
 
-    app.post('/api/contact_us', (req, res) => {
+    router.post('/api/contact_us', (req, res) => {
         helper.Dlog(req.body)
         var reqObj =  req.body
         helper.CheckParameterValid(res, reqObj, ["name", "email", "subject", "message"], () => {
@@ -745,7 +745,7 @@ module.exports.controller = (app, _io, _socket_list) => {
 
     } )
 
-    app.post('/admin/user_list', (req, res) => {
+    router.post('/admin/user_list', (req, res) => {
         helper.Dlog(req.body)
         console.log("aqui esta el socket en user_list:  ",_io)
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -767,7 +767,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    app.post('/api/admin/driver_list', (req, res) => {
+    router.post('/api/admin/driver_list', (req, res) => {
         helper.Dlog(req.body)
         checkAccessToken(req.headers, res, (_uObj) => {
             db.query("SELECT `ud`.`user_id`, `ud`.`name`, `ud`.`email`, `ud`.`gender`, `ud`.`mobile`, `ud`.`mobile_code`, `ud`.`user_type`, `ud`.`device_source`, `ud`.`zone_id`, `ud`.`is_block`, (CASE WHEN `ud`.`image` != '' THEN CONCAT('" + helper.ImagePath() + "', `ud`.`image`  ) ELSE '' END) AS `image` , `ud`.`is_online`, `ud`.`status`, `ud`.`created_date`, IFNULL( `zl`.`zone_name` , '' ) AS `zone_name` FROM `user_detail` AS `ud`" +
@@ -787,7 +787,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    app.post('/api/admin/driver_detail', (req, res) => {
+    router.post('/api/admin/driver_detail', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -819,7 +819,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    app.post('/api/admin/service_add', (req, res) => {
+    router.post('/api/admin/service_add', (req, res) => {
         var form = new multiparty.Form();
         form.parse(req, (err, reqObj, files) => {
             if (err) {
@@ -893,7 +893,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         })
     })
 
-    app.post('/api/admin/service_list', (req, res) => {
+    router.post('/api/admin/service_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -912,7 +912,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    app.post('/api/admin/service_document_list', (req, res) => {
+    router.post('/api/admin/service_document_list', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -935,7 +935,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         }, ut_admin)
     })
 
-    app.post('/api/admin/service_edit', (req, res) => {
+    router.post('/api/admin/service_edit', (req, res) => {
         var form = new multiparty.Form();
         form.parse(req, (err, reqObj, files) => {
             if (err) {
@@ -1022,7 +1022,7 @@ module.exports.controller = (app, _io, _socket_list) => {
         })
     })
 
-    app.post('/api/admin/service_delete', (req, res) => {
+    router.post('/api/admin/service_delete', (req, res) => {
         helper.Dlog(req.body)
         var reqObj = req.body
         checkAccessToken(req.headers, res, (_uObj) => {
@@ -1052,7 +1052,7 @@ module.exports.controller = (app, _io, _socket_list) => {
     })
 
 
-    app.get('/test/status', (req, res) => {
+    router.get('/test/status', (req, res) => {
     // 1. Log en el servidor para confirmar que la petición llegó a este punto
     helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
     
@@ -1065,7 +1065,7 @@ module.exports.controller = (app, _io, _socket_list) => {
     
 });
 
- app.get('/test/ejemplo', (req, res) => {
+ router.get('/test/ejemplo', (req, res) => {
     // 1. Log en el servidor para confirmar que la petición llegó a este punto
     helper.Dlog('INFO: Petición de prueba recibida en /api/test/status'); 
     
