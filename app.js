@@ -974,13 +974,13 @@ app.use(cors(corsOptions));
 
 // 1. CARGA DE CONTROLADORES DINÁMICOS EN EL ROUTER
 // Esta lógica se ejecuta aquí mismo, antes de montar el router
-fs.readdirSync('./controllers').forEach((file) => {
-    if (file.substr(-3) == ".js") {
-        route = require('./controllers/' + file);
-        // Pasamos el apiRouter para que las rutas se registren en él
-        route.controller(apiRouter, io, user_socket_connect_list); 
-    }
-});
+// fs.readdirSync('./controllers').forEach((file) => {
+//     if (file.substr(-3) == ".js") {
+//         route = require('./controllers/' + file);
+//         // Pasamos el apiRouter para que las rutas se registren en él
+//         route.controller(apiRouter, io, user_socket_connect_list); 
+//     }
+// });
 
 // 2. MONTAR ROUTERS ESTÁTICOS Y DINÁMICOS
 app.use('/', indexRouter);
@@ -988,6 +988,14 @@ app.use('/users', usersRouter);
 // Montamos el router de la API
 app.use('/api', apiRouter); 
 
+// 3. CARGA DE CONTROLADORES DINÁMICOS EN EL ROUTER
+fs.readdirSync('./controllers').forEach((file) => {
+    if (file.substr(-3) == ".js") {
+        route = require('./controllers/' + file);
+        // Pasamos el apiRouter para que las rutas se registren en él
+        route.controller(apiRouter, io, user_socket_connect_list); 
+    }
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
