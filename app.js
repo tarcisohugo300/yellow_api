@@ -709,6 +709,94 @@
 
 
 
+// var createError = require('http-errors');
+// var express = require('express');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var logger = require('morgan');
+
+// const cors = require('cors');
+// var fs = require('fs');
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+// var app = express();
+// // 💡 CORRECCIÓN CLAVE: Crear el servidor HTTP en el que se montará Socket.IO
+// var server = require('http').createServer(app); 
+// // 💡 ADJUNTAR SOCKET.IO AL SERVIDOR
+// var io = require('socket.io')(server, { 
+//   cors: {
+//     origin: "http://localhost:4200", // Asegúrate de que esta URL sea la correcta para tu cliente
+//     methods: ["GET", "POST"]
+//   }
+// })
+
+// var user_socket_connect_list = [];
+
+// // view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
+
+// app.use(logger('dev'));
+// // Asegúrate de que los límites de tamaño sigan siendo adecuados para la subida de imágenes
+// app.use(express.json({ limit: '100mb' })); 
+// app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+
+// const corsOptions = {
+//   origin: "http://localhost:4200",
+// }
+
+// app.use(cors(corsOptions));
+
+// // Carga de Controladores (SE DEJA COMO ESTABA)
+// // Tus controllers reciben: app, io, user_socket_connect_list
+// fs.readdirSync('./controllers').forEach((file) => {
+//   if (file.substr(-3) == ".js") {
+//     route = require('./controllers/' + file);
+//     route.controller(app, io, user_socket_connect_list); 
+//   }
+// })
+
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
+
+// // error handler
+// app.use(function (err, req, res, next) {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+
+// // 🔑 CAMBIO CLAVE: Exportar el servidor HTTP con Socket.IO adjunto
+// module.exports = server; 
+
+// // ELIMINAR CÓDIGO EXTRA: Se eliminan las funciones Array.prototype y String.prototype
+// // y las llamadas a server.listen, ya que todo eso se manejará en www.js
+
+
+
+
+
+
+
+
+
+// ===================================
+// yellow_api/app.js - Corregido (Limpieza)
+// ===================================
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -716,71 +804,55 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const cors = require('cors');
-var fs = require('fs');
+// ELIMINAMOS 'fs' de aquí
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
-// 💡 CORRECCIÓN CLAVE: Crear el servidor HTTP en el que se montará Socket.IO
-var server = require('http').createServer(app); 
-// 💡 ADJUNTAR SOCKET.IO AL SERVIDOR
-var io = require('socket.io')(server, { 
-  cors: {
-    origin: "http://localhost:4200", // Asegúrate de que esta URL sea la correcta para tu cliente
-    methods: ["GET", "POST"]
-  }
-})
+// ELIMINAMOS: var server = require('http').createServer(app);
+// ELIMINAMOS: var io = require('socket.io')(server, { ... });
+// ELIMINAMOS: var serverPort = 3001; 
+// ELIMINAMOS: var user_socket_connect_list = [];
 
-var user_socket_connect_list = [];
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-// Asegúrate de que los límites de tamaño sigan siendo adecuados para la subida de imágenes
-app.use(express.json({ limit: '100mb' })); 
+app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Configuración de CORS HTTP (Usamos la versión simple para asegurar el debug)
+app.use(cors()); 
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-const corsOptions = {
-  origin: "http://localhost:4200",
-}
-
-app.use(cors(corsOptions));
-
-// Carga de Controladores (SE DEJA COMO ESTABA)
-// Tus controllers reciben: app, io, user_socket_connect_list
-fs.readdirSync('./controllers').forEach((file) => {
-  if (file.substr(-3) == ".js") {
-    route = require('./controllers/' + file);
-    route.controller(app, io, user_socket_connect_list); 
-  }
-})
+// ELIMINAMOS: El bucle fs.readdirSync('./controllers').forEach((file) => { ... })
+// Esta lógica se mueve a www.js
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
-// 🔑 CAMBIO CLAVE: Exportar el servidor HTTP con Socket.IO adjunto
-module.exports = server; 
+// La aplicación Express es lo único que se exporta.
+module.exports = app; 
 
-// ELIMINAR CÓDIGO EXTRA: Se eliminan las funciones Array.prototype y String.prototype
-// y las llamadas a server.listen, ya que todo eso se manejará en www.js
+// ELIMINAMOS: server.listen(serverPort); y console.log.
+// ELIMINAMOS: extensiones Array.prototype y String.prototype (muévelas a un helper si son necesarias).

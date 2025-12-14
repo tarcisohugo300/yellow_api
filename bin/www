@@ -44,6 +44,14 @@
 // });
 
 
+
+
+
+
+
+
+
+
 // /**
 //  * Carga de Controladores y Lógica de Socket.IO
 //  * ESTA LÓGICA FUE MOVIDA DE app.js (antes pp.js)
@@ -839,23 +847,150 @@
 
 
 // 💡 CORRECCIÓN CLAVE: Importar el servidor con Socket.IO ya adjunto
-var server = require('../app'); 
+// var server = require('../app'); 
+// var debug = require('debug')('food-delivery:server');
+// // ❌ http ya no es necesario importarlo aquí
+// // var http = require('http'); 
+
+// /**
+//  * Get port from environment and store in Express.
+//  */
+
+// var port = normalizePort(process.env.PORT || '3000');
+// // 💡 Usamos server.app para acceder a la configuración de Express
+// server.app.set('port', port); 
+
+// /**
+//  * Listen on provided port, on all network interfaces.
+//  */
+
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
+
+// /**
+//  * Normalize a port into a number, string, or false.
+//  */
+
+// function normalizePort(val) {
+//   var port = parseInt(val, 10);
+
+//   if (isNaN(port)) {
+//     // named pipe
+//     return val;
+//   }
+
+//   if (port >= 0) {
+//     // port number
+//     return port;
+//   }
+
+//   return false;
+// }
+
+// /**
+//  * Event listener for HTTP server "error" event.
+//  */
+
+// function onError(error) {
+//   if (error.syscall !== 'listen') {
+//     throw error;
+//   }
+
+//   var bind = typeof port === 'string'
+//     ? 'Pipe ' + port
+//     : 'Port ' + port;
+
+//   // handle specific listen errors with friendly messages
+//   switch (error.code) {
+//     case 'EACCES':
+//       console.error(bind + ' requires elevated privileges');
+//       process.exit(1);
+//       break;
+//     case 'EADDRINUSE':
+//       console.error(bind + ' is already in use');
+//       process.exit(1);
+//       break;
+//     default:
+//       throw error;
+//   }
+// }
+
+// /**
+//  * Event listener for HTTP server "listening" event.
+//  */
+
+// function onListening() {
+//   var addr = server.address();
+//   var bind = typeof addr === 'string'
+//     ? 'pipe ' + addr
+//     : 'port ' + addr.port;
+//   debug('Listening on ' + bind);
+//   console.log('Server running and listening on ' + addr.port);
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ===================================
+// yellow_api/bin/www.js - Corregido (Unificación)
+// ===================================
+
+var app = require('../app');
 var debug = require('debug')('food-delivery:server');
-// ❌ http ya no es necesario importarlo aquí
-// var http = require('http'); 
+var http = require('http');
+
+// Necesarios para Socket.IO y carga de rutas
+var fs = require('fs');
+var io_module = require('socket.io');
 
 /**
  * Get port from environment and store in Express.
  */
-
 var port = normalizePort(process.env.PORT || '3000');
-// 💡 Usamos server.app para acceder a la configuración de Express
-server.app.set('port', port); 
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+var server = http.createServer(app);
+
+// ** 1. INICIALIZACIÓN DE SOCKET.IO Y LISTA DE CONEXIONES **
+var user_socket_connect_list = [];
+
+var io = io_module(server, { 
+    cors: {
+        // Usamos '*' para eliminar el error 404 de CORS como causa.
+        origin: "*", 
+        methods: ["GET", "POST"]
+    }
+});
+
+// ** 2. CARGA DE CONTROLADORES DINÁMICOS (MOVIDA DESDE app.js) **
+// Carga las rutas y les pasa la instancia correcta de 'app', 'io', y 'user_socket_connect_list'.
+fs.readdirSync(__dirname + '/../controllers').forEach((file) => {
+    if (file.substr(-3) == ".js") {
+        route = require('../controllers/' + file);
+        // Pasa las instancias CORRECTAS de app, io, y la lista.
+        route.controller(app, io, user_socket_connect_list); 
+    }
+});
+
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
@@ -863,60 +998,57 @@ server.on('listening', onListening);
 /**
  * Normalize a port into a number, string, or false.
  */
-
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+    var port = parseInt(val, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-  return false;
+    return false;
 }
 
 /**
  * Event listener for HTTP server "error" event.
  */
-
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-  console.log('Server running and listening on ' + addr.port);
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+    console.log(`Server Start : ${addr.port}`); 
 }
