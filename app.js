@@ -871,6 +871,74 @@
 
 
 
+// var createError = require('http-errors');
+// var express = require('express');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var logger = require('morgan');
+
+// const cors = require('cors');
+// // ELIMINAMOS fs, la carga se hace en www.js
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+// var app = express();
+
+// // 💡 1. DEFINIMOS UN ROUTER PARA TODAS NUESTRAS RUTAS DINÁMICAS
+// var apiRouter = express.Router(); 
+
+// // view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'ejs');
+
+// app.use(logger('dev'));
+// app.use(express.json({ limit: '100mb' }));
+// app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// // Configuración de CORS HTTP (Usamos cors() por simplicidad)
+// const corsOptions = {
+//     origin: "http://localhost:4200", 
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
+// }
+// app.use(cors(corsOptions)); 
+// // Si la línea de arriba te da problemas, usa temporalmente: app.use(cors());
+
+// // 2. RUTAS ESTÁTICAS (QUE SABEMOS QUE FUNCIONAN)
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+
+// // 💡 3. MONTAMOS EL ROUTER DINÁMICO BAJO EL PREFIJO /api
+// // Todos los controladores cargados en apiRouter serán accesibles con /api/
+// app.use('/api', apiRouter); 
+
+
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//     next(createError(404));
+// });
+
+// // error handler
+// app.use(function (err, req, res, next) {
+//     // set locals, only providing error in development
+//     res.locals.message = err.message;
+//     res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//     // render the error page
+//     res.status(err.status || 500);
+//     res.render('error');
+// });
+
+
+// // 🔑 EXPORTACIÓN CLAVE: Exportamos app Y apiRouter para que www.js los use
+// module.exports = { app, apiRouter };
+
+
+
+
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -878,59 +946,55 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const cors = require('cors');
-// ELIMINAMOS fs, la carga se hace en www.js
+var fs = require('fs'); // <--- NECESARIO AQUÍ
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+var server = require('http').createServer(app); 
+var io = require('socket.io')(server, { 
+    cors: {
+        origin: "http://localhost:4200", 
+        methods: ["GET", "POST"]
+    }
+});
 
-// 💡 1. DEFINIMOS UN ROUTER PARA TODAS NUESTRAS RUTAS DINÁMICAS
-var apiRouter = express.Router(); 
+var user_socket_connect_list = [];
+var apiRouter = express.Router(); // <--- ROUTER DEFINIDO AQUÍ
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-app.use(logger('dev'));
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ extended: true, limit: '100mb' }));
-app.use(cookieParser());
+// ... (view engine setup y middleware se dejan IGUAL) ...
 app.use(express.static(path.join(__dirname, 'public')));
+// ...
 
-// Configuración de CORS HTTP (Usamos cors() por simplicidad)
 const corsOptions = {
-    origin: "http://localhost:4200", 
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"]
+    origin: "http://localhost:4200",
 }
 app.use(cors(corsOptions)); 
-// Si la línea de arriba te da problemas, usa temporalmente: app.use(cors());
 
-// 2. RUTAS ESTÁTICAS (QUE SABEMOS QUE FUNCIONAN)
+// 1. CARGA DE CONTROLADORES DINÁMICOS EN EL ROUTER
+// Esta lógica se ejecuta aquí mismo, antes de montar el router
+fs.readdirSync('./controllers').forEach((file) => {
+    if (file.substr(-3) == ".js") {
+        route = require('./controllers/' + file);
+        // Pasamos el apiRouter para que las rutas se registren en él
+        route.controller(apiRouter, io, user_socket_connect_list); 
+    }
+});
+
+// 2. MONTAR ROUTERS ESTÁTICOS Y DINÁMICOS
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
-// 💡 3. MONTAMOS EL ROUTER DINÁMICO BAJO EL PREFIJO /api
-// Todos los controladores cargados en apiRouter serán accesibles con /api/
+// Montamos el router de la API
 app.use('/api', apiRouter); 
 
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+    next(createError(404));
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+// ... (error handler) ...
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
-
-
-// 🔑 EXPORTACIÓN CLAVE: Exportamos app Y apiRouter para que www.js los use
-module.exports = { app, apiRouter };
+// 🔑 EXPORTACIÓN CLAVE: Exportar solo el servidor con todo adjunto
+module.exports = server;
