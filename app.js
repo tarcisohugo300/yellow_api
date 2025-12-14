@@ -515,13 +515,14 @@ var fs = require('fs');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var app = express(); // ⬅️ Deja solo la aplicación Express
-// ❌ ELIMINAR: var server = require('http').createServer(app);
-// ❌ ELIMINAR: var io = require('socket.io')(server, { ... })
-// ❌ ELIMINAR: var serverPort = 3001;
-// ❌ ELIMINAR: server.listen(serverPort);
-// ❌ ELIMINAR: console.log("Server Start : " + serverPort );
-var { io, server } = require('./bin/www');
+var app = express();
+
+// 💡 1. IMPORTAR IO y el server de www.js
+// Esto se hace ANTES de cargar los controllers
+var { io, server } = require('./bin/www'); 
+
+
+// 💡 2. DECLARAR user_socket_connect_list
 var user_socket_connect_list = [];
 
 // view engine setup
@@ -529,7 +530,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json({ limit: '100mb' }));
+// Usa un límite de JSON más grande si necesitas subir imágenes grandes
+app.use(express.json({ limit: '100mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -540,23 +542,26 @@ app.use('/users', usersRouter);
 const corsOptions = {
   origin: "http://localhost:4200",
 }
+
 app.use(cors(corsOptions));
 
 
-// ⚠️ IMPORTANTE: Crea un Router para los controllers que usaremos en www.js
+// 💡 3. CREAR UN ROUTER para las rutas dinámicas (para montarlas en /api)
 var apiRouter = express.Router();
 
 
-// ♻️ CARGA DE CONTROLLERS (Manda el router, no 'app')
-// Así podrás montar todas las rutas dinámicas bajo un prefijo en www.js
+// ♻️ 4. CARGA DE CONTROLADORES
+// Se pasa el apiRouter, io, y user_socket_connect_list a cada controller
 fs.readdirSync('./controllers').forEach((file) => {
-   if (file.substr(-3) == ".js") {
- route = require('./controllers/' + file);
- route.controller(apiRouter, io, user_socket_connect_list); // ⬅️ Usaba 'app' y variables internas
- }
+  if (file.substr(-3) == ".js") {
+    route = require('./controllers/' + file);
+    // CAMBIO CLAVE: Pasar el apiRouter, io, y la lista de sockets
+    route.controller(apiRouter, io, user_socket_connect_list); 
+  }
 })
 
-// Monta el apiRouter en el prefijo /api (Asumiendo que tus rutas eran /login, /admin/login, etc.)
+// 💡 5. MONTAR EL ROUTER DINÁMICO
+// Todas las rutas de tus controllers (ej: '/login') ahora serán accesibles en /api/login
 app.use('/api', apiRouter);
 
 
@@ -565,16 +570,26 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler (DEJAR IGUAL)
+// error handler
 app.use(function (err, req, res, next) {
-  // ...
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
 
-// 🔑 EXPORTAR SÓLO LA APP
+// MÓDULO EXPORTS
 module.exports = app;
 
-// ❌ ELIMINA todo el código extra de Array.prototype y String.prototype que estaba aquí.
-// Mueve esas funciones a un archivo de 'helpers' o déjalas en un módulo global si son vitales.
+// ❌ ELIMINAR CÓDIGO EXTRA: 
+// El servidor ya no se inicia aquí, y las funciones de Array/String están fuera del alcance estándar.
+/*
+server.listen(serverPort);
+console.log("Server Start : " + serverPort );
+Array.prototype.swap = (x, y) => { ... }
+... etc.
+*/
